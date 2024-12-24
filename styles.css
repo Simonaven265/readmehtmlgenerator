@@ -64,3 +64,80 @@ th, td {
 th {
     background-color: #f5f5f5;
 }
+
+/* Dark theme */
+.dark-theme {
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+}
+
+.dark-theme .container {
+    background-color: #2d2d2d;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.dark-theme h1, .dark-theme h2, .dark-theme h3, 
+.dark-theme h4, .dark-theme h5, .dark-theme h6 {
+    color: #81a1c1;
+}
+
+.dark-theme code {
+    background-color: #3b3b3b;
+    color: #e0e0e0;
+}
+
+.dark-theme pre {
+    background-color: #3b3b3b;
+}
+
+.dark-theme a {
+    color: #88c0d0;
+}
+
+.dark-theme blockquote {
+    border-left: 4px solid #88c0d0;
+    color: #b0b0b0;
+}
+
+.dark-theme th, .dark-theme td {
+    border-color: #404040;
+}
+
+.dark-theme th {
+    background-color: #3b3b3b;
+}
+
+/* Theme toggle button */
+.theme-toggle {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+}
+
+.theme-toggle button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    background-color: #3498db;
+    color: white;
+    cursor: pointer;
+}
+
+.dark-theme .theme-toggle button {
+    background-color: #88c0d0;
+}
+
+/* Syntax highlighting */
+.codehilite pre {
+    padding: 1em;
+    margin: .5em 0;
+    overflow: auto;
+    border-radius: 4px;
+}
+
+/* Add more syntax highlighting styles here */
+.codehilite .hll { background-color: #49483e }
+.codehilite .c { color: #75715e } /* Comment */
+.codehilite .k { color: #66d9ef } /* Keyword */
+.codehilite .s { color: #e6db74 } /* String */
+.codehilite .n { color: #f8f8f2 } /* Name */
