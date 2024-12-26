@@ -16,11 +16,18 @@ from urllib.parse import urljoin
 from tkinter import colorchooser
 import json
 from datetime import datetime
+import gettext
+
+# Set up translation
+localedir = Path(__file__).parent / 'locales'
+gettext.bindtextdomain('messages', localedir)
+gettext.textdomain('messages')
+_ = gettext.gettext
 
 class ExportOptionsDialog(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
-        self.title("Export Options")
+        self.title(_("Export Options"))
         self.geometry("300x300")
         self.result = {}
         
@@ -29,19 +36,19 @@ class ExportOptionsDialog(tk.Toplevel):
         
         # HTML Options
         self.mobile_var = tk.BooleanVar(value=False)
-        ttk.Checkbutton(options, text="Mobile Optimized", variable=self.mobile_var).pack(anchor='w', pady=5)
+        ttk.Checkbutton(options, text=_("Mobile Optimized"), variable=self.mobile_var).pack(anchor='w', pady=5)
         
         self.print_var = tk.BooleanVar(value=False)
-        ttk.Checkbutton(options, text="Print Friendly", variable=self.print_var).pack(anchor='w')
+        ttk.Checkbutton(options, text=_("Print Friendly"), variable=self.print_var).pack(anchor='w')
         
         self.toc_var = tk.BooleanVar(value=True)
-        ttk.Checkbutton(options, text="Include Table of Contents", variable=self.toc_var).pack(anchor='w')
+        ttk.Checkbutton(options, text=_("Include Table of Contents"), variable=self.toc_var).pack(anchor='w')
         
         # Buttons
         btn_frame = ttk.Frame(self)
         btn_frame.pack(side='bottom', pady=10)
-        ttk.Button(btn_frame, text="Export", command=self.save).pack(side='left', padx=5)
-        ttk.Button(btn_frame, text="Cancel", command=self.cancel).pack(side='left')
+        ttk.Button(btn_frame, text=_("Export"), command=self.save).pack(side='left', padx=5)
+        ttk.Button(btn_frame, text=_("Cancel"), command=self.cancel).pack(side='left')
 
     def save(self):
         self.result = {
@@ -58,7 +65,7 @@ class ExportOptionsDialog(tk.Toplevel):
 class ExportSettingsDialog(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
-        self.title("Export Settings")
+        self.title(_("Export Settings"))
         self.geometry("500x400")
         
         # Create notebook for tabs
@@ -67,18 +74,18 @@ class ExportSettingsDialog(tk.Toplevel):
         
         # Filename pattern tab
         filename_frame = ttk.Frame(notebook)
-        notebook.add(filename_frame, text='Filename')
+        notebook.add(filename_frame, text=_('Filename'))
         
-        ttk.Label(filename_frame, text="Filename Pattern:").pack(anchor='w', pady=5)
+        ttk.Label(filename_frame, text=_("Filename Pattern:")).pack(anchor='w', pady=5)
         self.pattern_var = tk.StringVar(value="{name}")
         pattern_entry = ttk.Entry(filename_frame, textvariable=self.pattern_var, width=40)
         pattern_entry.pack(fill='x', padx=5)
         
-        ttk.Label(filename_frame, text="Available patterns:\n{name} - Original filename\n{date} - Current date\n{title} - First heading").pack(anchor='w', pady=5)
+        ttk.Label(filename_frame, text=_("Available patterns:\n{name} - Original filename\n{date} - Current date\n{title} - First heading")).pack(anchor='w', pady=5)
         
         # Metadata tab
         metadata_frame = ttk.Frame(notebook)
-        notebook.add(metadata_frame, text='Metadata')
+        notebook.add(metadata_frame, text=_('Metadata'))
         
         self.metadata = {
             'author': tk.StringVar(),
@@ -87,26 +94,26 @@ class ExportSettingsDialog(tk.Toplevel):
         }
         
         for key in self.metadata:
-            ttk.Label(metadata_frame, text=f"{key.title()}:").pack(anchor='w', pady=2)
+            ttk.Label(metadata_frame, text=f"{_(key.title())}:").pack(anchor='w', pady=2)
             ttk.Entry(metadata_frame, textvariable=self.metadata[key], width=40).pack(fill='x', padx=5)
             
         # Header/Footer tab
         custom_frame = ttk.Frame(notebook)
-        notebook.add(custom_frame, text='Custom HTML')
+        notebook.add(custom_frame, text=_('Custom HTML'))
         
-        ttk.Label(custom_frame, text="Custom Header HTML:").pack(anchor='w', pady=2)
+        ttk.Label(custom_frame, text=_("Custom Header HTML:")).pack(anchor='w', pady=2)
         self.header_text = tk.Text(custom_frame, height=5, width=40)
         self.header_text.pack(fill='x', padx=5)
         
-        ttk.Label(custom_frame, text="Custom Footer HTML:").pack(anchor='w', pady=2)
+        ttk.Label(custom_frame, text=_("Custom Footer HTML:")).pack(anchor='w', pady=2)
         self.footer_text = tk.Text(custom_frame, height=5, width=40)
         self.footer_text.pack(fill='x', padx=5)
         
         # Buttons
         btn_frame = ttk.Frame(self)
         btn_frame.pack(fill='x', pady=10)
-        ttk.Button(btn_frame, text="Save", command=self.save).pack(side='right', padx=5)
-        ttk.Button(btn_frame, text="Cancel", command=self.destroy).pack(side='right')
+        ttk.Button(btn_frame, text=_("Save"), command=self.save).pack(side='right', padx=5)
+        ttk.Button(btn_frame, text=_("Cancel"), command=self.destroy).pack(side='right')
 
     def save(self):
         self.result = {
@@ -131,7 +138,7 @@ class ColorPickerButton(tk.Button):  # Changed from ttk.Button to tk.Button
 
     def pick_color(self):
         # Show color picker dialog
-        color = colorchooser.askcolor(self.color, title="Choose Color")[1]
+        color = colorchooser.askcolor(self.color, title=_("Choose Color"))[1]
         if color:
             self.color = color
             self.configure(background=color)
@@ -142,7 +149,7 @@ class ColorPickerButton(tk.Button):  # Changed from ttk.Button to tk.Button
 class ThemeManagerDialog(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
-        self.title("Theme Manager")
+        self.title(_("Theme Manager"))
         self.geometry("800x600")
         self.parent = parent
 
@@ -154,7 +161,7 @@ class ThemeManagerDialog(tk.Toplevel):
         self.editor_frame.pack(side='left', fill='both', expand=True, padx=10, pady=10)
 
         # Theme list
-        ttk.Label(self.list_frame, text="Available Themes:").pack(anchor='w')
+        ttk.Label(self.list_frame, text=_("Available Themes:")).pack(anchor='w')
         
         # Theme list with scrollbar
         list_frame = ttk.Frame(self.list_frame)
@@ -171,8 +178,8 @@ class ThemeManagerDialog(tk.Toplevel):
         # Theme list buttons
         btn_frame = ttk.Frame(self.list_frame)
         btn_frame.pack(fill='x', pady=5)
-        ttk.Button(btn_frame, text="New Theme", command=self.new_theme).pack(side='left', padx=2)
-        ttk.Button(btn_frame, text="Delete", command=self.delete_theme).pack(side='left', padx=2)
+        ttk.Button(btn_frame, text=_("New Theme"), command=self.new_theme).pack(side='left', padx=2)
+        ttk.Button(btn_frame, text=_("Delete"), command=self.delete_theme).pack(side='left', padx=2)
 
         # Theme editor notebook
         self.notebook = ttk.Notebook(self.editor_frame)
@@ -180,27 +187,27 @@ class ThemeManagerDialog(tk.Toplevel):
 
         # General settings tab
         general_frame = ttk.Frame(self.notebook)
-        self.notebook.add(general_frame, text='General')
+        self.notebook.add(general_frame, text=_('General'))
         
         # Theme name
         name_frame = ttk.Frame(general_frame)
         name_frame.pack(fill='x', pady=5)
-        ttk.Label(name_frame, text="Theme Name:").pack(side='left')
+        ttk.Label(name_frame, text=_("Theme Name:")).pack(side='left')
         self.name_var = tk.StringVar()
         ttk.Entry(name_frame, textvariable=self.name_var).pack(side='left', padx=5, fill='x', expand=True)
 
         # Color settings
-        colors_frame = ttk.LabelFrame(general_frame, text="Colors")
+        colors_frame = ttk.LabelFrame(general_frame, text=_("Colors"))
         colors_frame.pack(fill='x', pady=5)
 
         self.color_pickers = {}
         color_options = {
-            'background': 'Background',
-            'text': 'Text Color',
-            'heading': 'Heading Color',
-            'link': 'Link Color',
-            'code_bg': 'Code Background',
-            'code_text': 'Code Text'
+            'background': _('Background'),
+            'text': _('Text Color'),
+            'heading': _('Heading Color'),
+            'link': _('Link Color'),
+            'code_bg': _('Code Background'),
+            'code_text': _('Code Text')
         }
 
         for key, label in color_options.items():
@@ -215,13 +222,13 @@ class ThemeManagerDialog(tk.Toplevel):
             self.color_pickers[key].pack(side='right')
 
         # Font settings
-        font_frame = ttk.LabelFrame(general_frame, text="Fonts")
+        font_frame = ttk.LabelFrame(general_frame, text=_("Fonts"))
         font_frame.pack(fill='x', pady=5)
 
         # Font family
         family_frame = ttk.Frame(font_frame)
         family_frame.pack(fill='x', pady=2)
-        ttk.Label(family_frame, text="Font Family:").pack(side='left')
+        ttk.Label(family_frame, text=_("Font Family:")).pack(side='left')
         self.font_family = ttk.Combobox(family_frame, values=[
             "Arial", "Helvetica", "Times New Roman", "Georgia", 
             "Verdana", "Roboto", "Open Sans"
@@ -231,36 +238,36 @@ class ThemeManagerDialog(tk.Toplevel):
         # Font size
         size_frame = ttk.Frame(font_frame)
         size_frame.pack(fill='x', pady=2)
-        ttk.Label(size_frame, text="Base Font Size:").pack(side='left')
+        ttk.Label(size_frame, text=_("Base Font Size:")).pack(side='left')
         self.font_size = ttk.Spinbox(size_frame, from_=8, to=24)
         self.font_size.pack(side='right')
 
-        # Add Code tab for CSS
-        code_frame = ttk.Frame(self.notebook)
-        self.notebook.add(code_frame, text='Code')
+        # Custom CSS and JS tab
+        custom_frame = ttk.Frame(self.notebook)
+        self.notebook.add(custom_frame, text=_('Custom CSS & JS'))
         
-        self.css_text = tk.Text(code_frame, wrap='none', height=20)
-        self.css_text.pack(fill='both', expand=True)
+        ttk.Label(custom_frame, text=_("Custom CSS:")).pack(anchor='w', pady=2)
+        self.custom_css_text = tk.Text(custom_frame, height=10, width=40)
+        self.custom_css_text.pack(fill='x', padx=5)
         
-        # Add horizontal scrollbar to CSS text
-        code_xscroll = ttk.Scrollbar(code_frame, orient='horizontal', command=self.css_text.xview)
-        code_xscroll.pack(fill='x', side='bottom')
-        self.css_text.configure(xscrollcommand=code_xscroll.set)
+        ttk.Label(custom_frame, text=_("Custom JavaScript:")).pack(anchor='w', pady=2)
+        self.custom_js_text = tk.Text(custom_frame, height=10, width=40)
+        self.custom_js_text.pack(fill='x', padx=5)
 
         # Preview tab
         preview_frame = ttk.Frame(self.notebook)
-        self.notebook.add(preview_frame, text='Preview')
+        self.notebook.add(preview_frame, text=_('Preview'))
 
         # Add file selection frame
         select_frame = ttk.Frame(preview_frame)
         select_frame.pack(fill='x', pady=5)
         
-        ttk.Label(select_frame, text="Preview file:").pack(side='left', padx=5)
+        ttk.Label(select_frame, text=_("Preview file:")).pack(side='left', padx=5)
         self.preview_path = tk.StringVar()
         self.preview_entry = ttk.Entry(select_frame, textvariable=self.preview_path)
         self.preview_entry.pack(side='left', fill='x', expand=True, padx=5)
         
-        ttk.Button(select_frame, text="Browse", 
+        ttk.Button(select_frame, text=_("Browse"), 
                   command=self.select_preview_file).pack(side='left', padx=5)
         
         # Add preview frame with scrollbar
@@ -278,8 +285,8 @@ class ThemeManagerDialog(tk.Toplevel):
         # Bottom buttons
         bottom_frame = ttk.Frame(self.editor_frame)
         bottom_frame.pack(fill='x', pady=10)
-        ttk.Button(bottom_frame, text="Apply", command=self.apply_theme).pack(side='right', padx=5)
-        ttk.Button(bottom_frame, text="Save", command=self.save_theme).pack(side='right', padx=5)
+        ttk.Button(bottom_frame, text=_("Apply"), command=self.apply_theme).pack(side='right', padx=5)
+        ttk.Button(bottom_frame, text=_("Save"), command=self.save_theme).pack(side='right', padx=5)
 
         # Load themes
         self.load_themes()
@@ -314,10 +321,10 @@ class ThemeManagerDialog(tk.Toplevel):
         """
 
     def new_theme(self):
-        name = "New Theme"
+        name = _("New Theme")
         count = 1
         while name in self.parent.custom_themes:
-            name = f"New Theme {count}"
+            name = f"{_('New Theme')} {count}"
             count += 1
             
         self.name_var.set(name)
@@ -336,12 +343,14 @@ class ThemeManagerDialog(tk.Toplevel):
             'code_bg': '#f5f5f5',
             'code_text': '#333333',
             'font_family': 'Arial',
-            'font_size': '16'
+            'font_size': '16',
+            'custom_css': '',
+            'custom_js': ''
         }
 
     def load_themes(self):
         self.theme_list.delete(0, tk.END)
-        self.theme_list.insert(tk.END, "default")
+        self.theme_list.insert(tk.END, _("default"))
         
         # Get all themes and sort them
         theme_names = sorted(self.parent.custom_themes.keys())
@@ -371,12 +380,16 @@ class ThemeManagerDialog(tk.Toplevel):
             
         self.font_family.set(theme.get('font_family', 'Arial'))
         self.font_size.set(theme.get('font_size', '16'))
+        self.custom_css_text.delete('1.0', tk.END)
+        self.custom_css_text.insert('1.0', theme.get('custom_css', ''))
+        self.custom_js_text.delete('1.0', tk.END)
+        self.custom_js_text.insert('1.0', theme.get('custom_js', ''))
         self.update_preview()  # Update preview when theme is loaded
 
     def save_theme(self):
         name = self.name_var.get().strip()
         if not name:
-            messagebox.showerror("Error", "Theme name cannot be empty")
+            messagebox.showerror(_("Error"), _("Theme name cannot be empty"))
             return
 
         theme = {
@@ -387,19 +400,21 @@ class ThemeManagerDialog(tk.Toplevel):
             'code_bg': self.color_pickers['code_bg'].color,
             'code_text': self.color_pickers['code_text'].color,
             'font_family': self.font_family.get(),
-            'font_size': self.font_size.get()
+            'font_size': self.font_size.get(),
+            'custom_css': self.custom_css_text.get('1.0', 'end-1c'),
+            'custom_js': self.custom_js_text.get('1.0', 'end-1c')
         }
         
         self.parent.custom_themes[name] = theme
         self.parent.save_preferences()
         self.load_themes()  # Refresh list to show new theme
-        messagebox.showinfo("Success", f"Theme '{name}' saved successfully")
+        messagebox.showinfo(_("Success"), _("Theme '{name}' saved successfully").format(name=name))
         self.update_preview()  # Update preview when theme is saved
 
     def apply_theme(self):
         name = self.name_var.get().strip()
         if not name:
-            messagebox.showerror("Error", "Theme name cannot be empty")
+            messagebox.showerror(_("Error"), _("Theme name cannot be empty"))
             return
             
         # Save current theme first
@@ -415,7 +430,7 @@ class ThemeManagerDialog(tk.Toplevel):
         # Update preview with applied theme
         self.update_preview()
         
-        messagebox.showinfo("Success", f"Theme '{name}' applied")
+        messagebox.showinfo(_("Success"), _("Theme '{name}' applied").format(name=name))
 
     def delete_theme(self):
         selection = self.theme_list.curselection()
@@ -423,11 +438,11 @@ class ThemeManagerDialog(tk.Toplevel):
             return
             
         theme_name = self.theme_list.get(selection[0])
-        if theme_name == "default":
-            messagebox.showerror("Error", "Cannot delete default theme")
+        if theme_name == _("default"):
+            messagebox.showerror(_("Error"), _("Cannot delete default theme"))
             return
             
-        if messagebox.askyesno("Confirm Delete", f"Delete theme '{theme_name}'?"):
+        if messagebox.askyesno(_("Confirm Delete"), _("Delete theme '{theme_name}'?").format(theme_name=theme_name)):
             del self.parent.custom_themes[theme_name]
             self.parent.save_preferences()
             self.load_themes()
@@ -443,7 +458,9 @@ class ThemeManagerDialog(tk.Toplevel):
             'code_bg': self.color_pickers['code_bg'].color,
             'code_text': self.color_pickers['code_text'].color,
             'font_family': self.font_family.get(),
-            'font_size': self.font_size.get()
+            'font_size': self.font_size.get(),
+            'custom_css': self.custom_css_text.get('1.0', 'end-1c'),
+            'custom_js': self.custom_js_text.get('1.0', 'end-1c')
         }
         
         # Update CSS code view
@@ -471,9 +488,6 @@ code, pre {{
     color: var(--code-text);
 }}"""
 
-        self.css_text.delete('1.0', tk.END)
-        self.css_text.insert('1.0', css_code)
-
         # Create preview from selected file or default content
         preview_file = self.preview_path.get()
         if preview_file and os.path.exists(preview_file):
@@ -500,12 +514,19 @@ Click the Browse button above to select a Markdown file for preview."""
         # Create preview HTML
         preview_html = f"""
         <!DOCTYPE html>
-        <html>
+        <html lang="en">
         <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Theme Preview</title>
             <style>
             {base_css}
             {css_code}
+            {current_theme['custom_css']}
             </style>
+            <script>
+            {current_theme['custom_js']}
+            </script>
         </head>
         <body>
             <div class="container">
@@ -528,7 +549,7 @@ Click the Browse button above to select a Markdown file for preview."""
 
     def pick_color(self):
         # Show color picker dialog
-        color = colorchooser.askcolor(self.color, title="Choose Color")[1]
+        color = colorchooser.askcolor(self.color, title=_("Choose Color"))[1]
         if color:
             self.color = color
             self.configure(background=color)
@@ -546,7 +567,7 @@ Click the Browse button above to select a Markdown file for preview."""
 class ExportCustomizationDialog(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
-        self.title("Export Customization")
+        self.title(_("Export Customization"))
         self.geometry("500x600")
         
         notebook = ttk.Notebook(self)
@@ -554,37 +575,37 @@ class ExportCustomizationDialog(tk.Toplevel):
         
         # CSS Injection tab
         css_frame = ttk.Frame(notebook)
-        notebook.add(css_frame, text='Custom CSS')
+        notebook.add(css_frame, text=_('Custom CSS'))
         
-        ttk.Label(css_frame, text="Additional CSS:").pack(anchor='w')
+        ttk.Label(css_frame, text=_("Additional CSS:")).pack(anchor='w')
         self.css_text = tk.Text(css_frame, height=10)
         self.css_text.pack(fill='both', expand=True, padx=5, pady=5)
         
         # JavaScript Injection tab
         js_frame = ttk.Frame(notebook)
-        notebook.add(js_frame, text='Custom JavaScript')
+        notebook.add(js_frame, text=_('Custom JavaScript'))
         
-        ttk.Label(js_frame, text="Additional JavaScript:").pack(anchor='w')
+        ttk.Label(js_frame, text=_("Additional JavaScript:")).pack(anchor='w')
         self.js_text = tk.Text(js_frame, height=10)
         self.js_text.pack(fill='both', expand=True, padx=5, pady=5)
         
         # Asset Management tab
         asset_frame = ttk.Frame(notebook)
-        notebook.add(asset_frame, text='Assets')
+        notebook.add(asset_frame, text=_('Assets'))
         
         self.bundle_var = tk.BooleanVar(value=True)
-        ttk.Checkbutton(asset_frame, text="Bundle assets with HTML", 
+        ttk.Checkbutton(asset_frame, text=_("Bundle assets with HTML"), 
                        variable=self.bundle_var).pack(anchor='w')
         
         self.optimize_var = tk.BooleanVar(value=True)
-        ttk.Checkbutton(asset_frame, text="Optimize assets", 
+        ttk.Checkbutton(asset_frame, text=_("Optimize assets"), 
                        variable=self.optimize_var).pack(anchor='w')
         
         # Buttons
         btn_frame = ttk.Frame(self)
         btn_frame.pack(fill='x', pady=10)
-        ttk.Button(btn_frame, text="Save", command=self.save).pack(side='right', padx=5)
-        ttk.Button(btn_frame, text="Cancel", command=self.destroy).pack(side='right')
+        ttk.Button(btn_frame, text=_("Save"), command=self.save).pack(side='right', padx=5)
+        ttk.Button(btn_frame, text=_("Cancel"), command=self.destroy).pack(side='right')
 
     def save(self):
         self.result = {
@@ -598,7 +619,7 @@ class ExportCustomizationDialog(tk.Toplevel):
 class ReadmeConverter(TkinterDnD.Tk):
     def __init__(self):
         super().__init__()
-        self.title("README to HTML Converter")
+        self.title(_("README to HTML Converter"))
         self.geometry("600x400")
         self.output_dir = None
         self.temp_preview_file = None
@@ -630,7 +651,7 @@ class ReadmeConverter(TkinterDnD.Tk):
 
     def create_widgets(self):
         # Create and pack widgets
-        self.drop_label = tk.Label(self, text="Drop README files here or use the select button",
+        self.drop_label = tk.Label(self, text=_("Drop README files here or use the select button"),
                                  bg='#f0f0f0', pady=20)
         self.drop_label.pack(fill=tk.X, pady=10)
 
@@ -646,19 +667,19 @@ class ReadmeConverter(TkinterDnD.Tk):
         btn_frame = tk.Frame(self)
         btn_frame.pack(fill=tk.X, padx=10, pady=5)
 
-        self.select_btn = tk.Button(btn_frame, text="Select Files", command=self.select_files)
+        self.select_btn = tk.Button(btn_frame, text=_("Select Files"), command=self.select_files)
         self.select_btn.pack(side=tk.LEFT, padx=5)
 
-        self.output_btn = tk.Button(btn_frame, text="Select Output Directory", command=self.select_output_dir)
+        self.output_btn = tk.Button(btn_frame, text=_("Select Output Directory"), command=self.select_output_dir)
         self.output_btn.pack(side=tk.LEFT, padx=5)
 
-        self.preview_btn = tk.Button(btn_frame, text="Preview", command=self.preview_files)
+        self.preview_btn = tk.Button(btn_frame, text=_("Preview"), command=self.preview_files)
         self.preview_btn.pack(side=tk.LEFT, padx=5)
 
-        self.convert_btn = tk.Button(btn_frame, text="Convert to HTML", command=self.convert_files)
+        self.convert_btn = tk.Button(btn_frame, text=_("Convert to HTML"), command=self.convert_files)
         self.convert_btn.pack(side=tk.LEFT, padx=5)
 
-        self.clear_btn = tk.Button(btn_frame, text="Clear", command=self.clear_files)
+        self.clear_btn = tk.Button(btn_frame, text=_("Clear"), command=self.clear_files)
         self.clear_btn.pack(side=tk.RIGHT, padx=5)
 
         # Add progress bar and cancel button
@@ -668,7 +689,7 @@ class ReadmeConverter(TkinterDnD.Tk):
         self.progress_bar = Progressbar(self.progress_frame, mode='determinate')
         self.progress_bar.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 5))
         
-        self.cancel_btn = tk.Button(self.progress_frame, text="Cancel", command=self.cancel_conversion_task)
+        self.cancel_btn = tk.Button(self.progress_frame, text=_("Cancel"), command=self.cancel_conversion_task)
         self.cancel_btn.pack(side=tk.RIGHT)
         self.cancel_btn.pack_forget()  # Hide initially
 
@@ -678,33 +699,33 @@ class ReadmeConverter(TkinterDnD.Tk):
 
         # File menu
         file_menu = tk.Menu(menubar, tearoff=0)
-        menubar.add_cascade(label="File", menu=file_menu)
-        file_menu.add_command(label="Select Files", command=self.select_files)
-        file_menu.add_command(label="Select Output Directory", command=self.select_output_dir)
+        menubar.add_cascade(label=_("File"), menu=file_menu)
+        file_menu.add_command(label=_("Select Files"), command=self.select_files)
+        file_menu.add_command(label=_("Select Output Directory"), command=self.select_output_dir)
         
         # Recent files submenu
         self.recent_menu = tk.Menu(file_menu, tearoff=0)
-        file_menu.add_cascade(label="Recent Files", menu=self.recent_menu)
+        file_menu.add_cascade(label=_("Recent Files"), menu=self.recent_menu)
         self.update_recent_menu()
         
         file_menu.add_separator()
-        file_menu.add_command(label="Clear Recent Files", command=self.clear_recent_files)
+        file_menu.add_command(label=_("Clear Recent Files"), command=self.clear_recent_files)
         file_menu.add_separator()
-        file_menu.add_command(label="Exit", command=self.quit)
+        file_menu.add_command(label=_("Exit"), command=self.quit)
 
         # Export menu
         export_menu = tk.Menu(menubar, tearoff=0)
-        menubar.add_cascade(label="Export", menu=export_menu)
-        export_menu.add_command(label="Export Options...", command=self.show_export_options)
-        export_menu.add_command(label="Export Settings...", command=self.show_export_settings)
+        menubar.add_cascade(label=_("Export"), menu=export_menu)
+        export_menu.add_command(label=_("Export Options..."), command=self.show_export_options)
+        export_menu.add_command(label=_("Export Settings..."), command=self.show_export_settings)
         export_menu.add_separator()
-        export_menu.add_command(label="Quick Export", command=lambda: self.convert_files(quick=True))
-        export_menu.add_command(label="Customize Export...", command=self.show_export_customization)
+        export_menu.add_command(label=_("Quick Export"), command=lambda: self.convert_files(quick=True))
+        export_menu.add_command(label=_("Customize Export..."), command=self.show_export_customization)
 
         # Add Themes menu
         themes_menu = tk.Menu(menubar, tearoff=0)
-        menubar.add_cascade(label="Themes", menu=themes_menu)
-        themes_menu.add_command(label="Theme Manager...", command=self.show_theme_manager)
+        menubar.add_cascade(label=_("Themes"), menu=themes_menu)
+        themes_menu.add_command(label=_("Theme Manager..."), command=self.show_theme_manager)
 
     def update_recent_menu(self):
         self.recent_menu.delete(0, tk.END)
@@ -719,7 +740,7 @@ class ReadmeConverter(TkinterDnD.Tk):
             self.files_text.delete(1.0, tk.END)
             self.files_text.insert(tk.END, path)
         else:
-            messagebox.showerror("Error", f"File not found: {path}")
+            messagebox.showerror(_("Error"), _("File not found: {path}").format(path=path))
             self.recent_files.remove(path)
             self.save_preferences()
             self.update_recent_menu()
@@ -789,7 +810,7 @@ class ReadmeConverter(TkinterDnD.Tk):
 
     def clear_files(self):
         self.files_text.delete(1.0, tk.END)
-        self.drop_label.configure(text="Drop README files here or use the select button")
+        self.drop_label.configure(text=_("Drop README files here or use the select button"))
         self.progress_bar['value'] = 0
         self.cancel_btn.pack_forget()
 
@@ -805,13 +826,13 @@ class ReadmeConverter(TkinterDnD.Tk):
     def select_output_dir(self):
         self.output_dir = filedialog.askdirectory()
         if self.output_dir:
-            messagebox.showinfo("Output Directory", f"Selected output directory: {self.output_dir}")
+            messagebox.showinfo(_("Output Directory"), _("Selected output directory: {self.output_dir}").format(self=self))
             self.save_preferences()
 
     def preview_files(self):
         files = self.files_text.get(1.0, tk.END).strip().split("\n")
         if not files or not files[0]:
-            messagebox.showwarning("Warning", "Please select files to preview")
+            messagebox.showwarning(_("Warning"), _("Please select files to preview"))
             return
 
         try:
@@ -834,14 +855,14 @@ class ReadmeConverter(TkinterDnD.Tk):
             webbrowser.open(f'file://{self.temp_preview_file}')
 
         except Exception as e:
-            messagebox.showerror("Preview Error", str(e))
+            messagebox.showerror(_("Preview Error"), str(e))
 
     def convert_files(self, quick=False, format=None):
         files = self.files_text.get(1.0, tk.END).strip().split("\n")
         files = [f for f in files if f]
         
         if not files:
-            messagebox.showwarning("Warning", "No files selected")
+            messagebox.showwarning(_("Warning"), _("No files selected"))
             return
             
         # Reset cancel flag
@@ -868,10 +889,10 @@ class ReadmeConverter(TkinterDnD.Tk):
                 output_path = self.convert_readme_to_html(file, self.output_dir)
                 successful += 1
                 # Update UI from main thread
-                self.after(0, self._update_progress, i + 1, f"Converted {file} to {output_path}")
+                self.after(0, self._update_progress, i + 1, _("Converted {file} to {output_path}").format(file=file, output_path=output_path))
             except Exception as e:
                 failed += 1
-                self.after(0, self._show_error, f"Failed to convert {file}: {str(e)}")
+                self.after(0, self._show_error, _("Failed to convert {file}: {str(e)}").format(file=file, e=e))
 
             if self.cancel_conversion:
                 break
@@ -884,16 +905,16 @@ class ReadmeConverter(TkinterDnD.Tk):
         self.drop_label.configure(text=message)
 
     def _show_error(self, message):
-        messagebox.showerror("Error", message)
+        messagebox.showerror(_("Error"), message)
 
     def _finish_conversion(self, successful, failed):
         self.cancel_btn.pack_forget()
         total = successful + failed
-        status = f"Completed: {successful} successful, {failed} failed"
+        status = _("Completed: {successful} successful, {failed} failed").format(successful=successful, failed=failed)
         if self.cancel_conversion:
-            status = "Conversion cancelled. " + status
-        messagebox.showinfo("Conversion Complete", status)
-        self.drop_label.configure(text="Drop README files here or use the select button")
+            status = _("Conversion cancelled. ") + status
+        messagebox.showinfo(_("Conversion Complete"), status)
+        self.drop_label.configure(text=_("Drop README files here or use the select button"))
 
     def cancel_conversion_task(self):
         self.cancel_conversion = True
@@ -1028,7 +1049,7 @@ class ReadmeConverter(TkinterDnD.Tk):
         first_heading = None
         for line in content.splitlines():
             if line.startswith('# '):
-                first_heading = line[2:].strip()
+                first_heading = line[2:].trip()
                 break
         title = first_heading if first_heading else Path(readme_path).stem
         

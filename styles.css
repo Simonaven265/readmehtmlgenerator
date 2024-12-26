@@ -1,3 +1,4 @@
+/* Root variables for theme colors */
 :root {
     --bg-color: #ffffff;
     --text-color: #333333;
@@ -7,6 +8,7 @@
     --code-text: #333333;
 }
 
+/* Base styles */
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     line-height: 1.6;
@@ -24,11 +26,13 @@ body {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
+/* Heading styles */
 h1, h2, h3, h4, h5, h6 {
     color: var(--heading-color);
     margin-top: 1.5em;
 }
 
+/* Code styles */
 code {
     background-color: var(--code-bg);
     color: var(--code-text);
@@ -44,6 +48,7 @@ pre {
     overflow-x: auto;
 }
 
+/* Link styles */
 a {
     color: var(--link-color);
     text-decoration: none;
@@ -53,6 +58,7 @@ a:hover {
     text-decoration: underline;
 }
 
+/* Blockquote styles */
 blockquote {
     border-left: 4px solid #3498db;
     margin: 0;
@@ -60,6 +66,7 @@ blockquote {
     color: #666;
 }
 
+/* Table styles */
 table {
     border-collapse: collapse;
     width: 100%;
@@ -76,7 +83,7 @@ th {
     background-color: #f5f5f5;
 }
 
-/* Dark theme */
+/* Dark theme styles */
 .dark-theme {
     --bg-color: #1a1a1a;
     --text-color: #e0e0e0;
@@ -122,7 +129,7 @@ th {
     background-color: var(--code-bg);
 }
 
-/* Theme toggle button */
+/* Theme toggle button styles */
 .theme-toggle {
     position: fixed;
     top: 1rem;
@@ -142,7 +149,7 @@ th {
     background-color: #88c0d0;
 }
 
-/* Syntax highlighting */
+/* Syntax highlighting styles */
 .codehilite pre {
     padding: 1em;
     margin: .5em 0;
@@ -150,7 +157,6 @@ th {
     border-radius: 4px;
 }
 
-/* Add more syntax highlighting styles here */
 .codehilite .hll { background-color: #49483e }
 .codehilite .c { color: #75715e } /* Comment */
 .codehilite .k { color: #66d9ef } /* Keyword */
