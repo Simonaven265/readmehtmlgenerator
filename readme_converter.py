@@ -892,7 +892,7 @@ class ReadmeConverter(TkinterDnD.Tk):
                 self.after(0, self._update_progress, i + 1, _("Converted {file} to {output_path}").format(file=file, output_path=output_path))
             except Exception as e:
                 failed += 1
-                self.after(0, self._show_error, _("Failed to convert {file}: {str(e)}").format(file=file, e=e))
+                self.after(0, self._show_error, _("Failed to convert {file}: {e}").format(file=file, e=e))
 
             if self.cancel_conversion:
                 break
@@ -1049,7 +1049,7 @@ class ReadmeConverter(TkinterDnD.Tk):
         first_heading = None
         for line in content.splitlines():
             if line.startswith('# '):
-                first_heading = line[2:].trip()
+                first_heading = line[2:].strip()
                 break
         title = first_heading if first_heading else Path(readme_path).stem
         
