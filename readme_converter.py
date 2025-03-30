@@ -24,31 +24,188 @@ gettext.bindtextdomain('messages', localedir)
 gettext.textdomain('messages')
 _ = gettext.gettext
 
+# Modern color scheme - Updated with dark blue/aqua theme
+COLORS = {
+    'primary': '#1e3d59',      # Dark blue
+    'primary_light': '#2d5d86', # Lighter blue
+    'primary_dark': '#152c40',  # Darker blue
+    'secondary': '#17a2b8',     # Aqua
+    'secondary_light': '#1fc8e3', # Light aqua
+    'accent': '#00ffff',        # Cyan accent
+    'background': '#f0f7fa',    # Very light blue-tinted background
+    'surface': '#ffffff',       # White surface
+    'text': '#2c3e50',         # Dark text
+    'text_light': '#6c8998',   # Blue-gray text
+    'border': '#b8daff',       # Light blue border
+    'success': '#28a745',      # Green for success states
+    'warning': '#ffc107',      # Yellow for warnings
+    'error': '#dc3545'         # Red for errors
+}
+
+class ModernUI:
+    """Utility class with modern UI styling methods"""
+    @staticmethod
+    def configure_styles():
+        style = ttk.Style()
+        
+        # Frame styling
+        style.configure('TFrame', background=COLORS['background'])
+        style.configure('Surface.TFrame', background=COLORS['surface'])
+        
+        # Button styling - More modern and refined
+        style.configure('TButton', 
+                      background=COLORS['primary'],
+                      foreground='white',
+                      padding=(15, 8),
+                      font=('Segoe UI', 10),
+                      borderwidth=0)
+        style.map('TButton',
+                background=[('active', COLORS['primary_light']), 
+                           ('pressed', COLORS['primary_dark'])])
+        
+        # Primary button with aqua accent
+        style.configure('Primary.TButton', 
+                      background=COLORS['secondary'],
+                      foreground='white')
+        style.map('Primary.TButton',
+                background=[('active', COLORS['secondary_light']),
+                           ('pressed', COLORS['secondary'])])
+        
+        # Accent button
+        style.configure('Accent.TButton', 
+                      background=COLORS['accent'],
+                      foreground=COLORS['primary_dark'])
+        
+        # Label styling - More refined typography
+        style.configure('TLabel', 
+                      background=COLORS['background'],
+                      foreground=COLORS['text'],
+                      font=('Segoe UI', 10))
+        
+        # Header label with new style
+        style.configure('Header.TLabel', 
+                      font=('Segoe UI', 24, 'bold'),
+                      foreground=COLORS['primary'])
+        
+        # Subheader label
+        style.configure('Subheader.TLabel', 
+                      font=('Segoe UI', 14),
+                      foreground=COLORS['text_light'])
+        
+        # Entry styling with better contrast
+        style.configure('TEntry', 
+                      background=COLORS['surface'],
+                      foreground=COLORS['text'],
+                      fieldbackground=COLORS['surface'],
+                      padding=8,
+                      font=('Segoe UI', 10))
+        
+        # Checkbutton with new design
+        style.configure('TCheckbutton', 
+                      background=COLORS['background'],
+                      foreground=COLORS['text'],
+                      font=('Segoe UI', 10))
+        
+        # Progressbar with aqua color
+        style.configure('TProgressbar', 
+                      background=COLORS['secondary'],
+                      troughcolor=COLORS['background'])
+                      
+        # Custom dropdown styling
+        style.configure('Dropdown.TMenubutton',
+                     background=COLORS['surface'],
+                     foreground=COLORS['text'],
+                     padding=(10, 5),
+                     font=('Segoe UI', 10))
+        style.map('Dropdown.TMenubutton',
+                background=[('active', COLORS['primary_light']),
+                           ('pressed', COLORS['primary'])])
+
+    @staticmethod
+    def create_custom_button(parent, text, command, **kwargs):
+        """Create a modern custom button with hover effects"""
+        frame = tk.Frame(parent, background=COLORS['background'])
+        
+        btn = tk.Button(frame, text=text, command=command,
+                     font=('Segoe UI', 10),
+                     bg=COLORS['secondary'],
+                     fg='white',
+                     activebackground=COLORS['secondary_light'],
+                     activeforeground='white',
+                     bd=0,
+                     padx=15,
+                     pady=8,
+                     cursor='hand2',
+                     relief='flat',
+                     **kwargs)
+        
+        def on_enter(e):
+            btn['background'] = COLORS['secondary_light']
+            
+        def on_leave(e):
+            btn['background'] = COLORS['secondary']
+            
+        btn.bind('<Enter>', on_enter)
+        btn.bind('<Leave>', on_leave)
+        btn.pack(padx=1, pady=1)
+        
+        return frame
+
+# Initialize modern UI styles
+ModernUI.configure_styles()
+
 class ExportOptionsDialog(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
         self.title(_("Export Options"))
-        self.geometry("300x300")
+        self.geometry("350x350")
+        self.configure(bg=COLORS['background'])
         self.result = {}
         
-        options = ttk.Frame(self)
-        options.pack(fill='x', padx=10, pady=5)
+        # Make dialog look modern
+        self.transient(parent)
+        self.grab_set()
+        
+        # Dialog header
+        header = ttk.Label(self, text=_("Export Options"), style='Header.TLabel')
+        header.pack(pady=(20, 10), padx=20, anchor='w')
+        
+        # Create a frame with white background 
+        options_frame = ttk.Frame(self, style='Surface.TFrame')
+        options_frame.pack(fill='both', expand=True, padx=20, pady=10)
         
         # HTML Options
         self.mobile_var = tk.BooleanVar(value=False)
-        ttk.Checkbutton(options, text=_("Mobile Optimized"), variable=self.mobile_var).pack(anchor='w', pady=5)
+        ttk.Checkbutton(options_frame, text=_("Mobile Optimized"), 
+                      variable=self.mobile_var).pack(anchor='w', pady=(15, 5), padx=15)
         
         self.print_var = tk.BooleanVar(value=False)
-        ttk.Checkbutton(options, text=_("Print Friendly"), variable=self.print_var).pack(anchor='w')
+        ttk.Checkbutton(options_frame, text=_("Print Friendly"), 
+                      variable=self.print_var).pack(anchor='w', pady=5, padx=15)
         
         self.toc_var = tk.BooleanVar(value=True)
-        ttk.Checkbutton(options, text=_("Include Table of Contents"), variable=self.toc_var).pack(anchor='w')
+        ttk.Checkbutton(options_frame, text=_("Include Table of Contents"), 
+                      variable=self.toc_var).pack(anchor='w', pady=5, padx=15)
         
         # Buttons
-        btn_frame = ttk.Frame(self)
-        btn_frame.pack(side='bottom', pady=10)
-        ttk.Button(btn_frame, text=_("Export"), command=self.save).pack(side='left', padx=5)
-        ttk.Button(btn_frame, text=_("Cancel"), command=self.cancel).pack(side='left')
+        btn_frame = ttk.Frame(self, style='Surface.TFrame')
+        btn_frame.pack(fill='x', padx=20, pady=20)
+        
+        ttk.Button(btn_frame, text=_("Export"), command=self.save, 
+                 style='Primary.TButton').pack(side='right', padx=5)
+        ttk.Button(btn_frame, text=_("Cancel"), command=self.cancel).pack(side='right', padx=5)
+        
+        # Center the dialog on the screen
+        self.center_window()
+
+    def center_window(self):
+        """Center the dialog window on the screen"""
+        self.update_idletasks()
+        width = self.winfo_width()
+        height = self.winfo_height()
+        x = (self.winfo_screenwidth() // 2) - (width // 2)
+        y = (self.winfo_screenheight() // 2) - (height // 2)
+        self.geometry('{}x{}+{}+{}'.format(width, height, x, y))
 
     def save(self):
         self.result = {
@@ -619,15 +776,17 @@ class ExportCustomizationDialog(tk.Toplevel):
 class ReadmeConverter(TkinterDnD.Tk):
     def __init__(self):
         super().__init__()
-        self.title(_("README to HTML Converter"))
-        self.geometry("600x400")
+        self.title(_("README HTML Generator"))
+        self.geometry("800x600")
+        self.configure(bg=COLORS['background'])
+        
         self.output_dir = None
         self.temp_preview_file = None
         self.cancel_conversion = False
         self.recent_files = self.load_preferences().get('recent_files', [])
         self.max_recent_files = 5
         self.export_options = {
-            'format': 'html',  # Always HTML now
+            'format': 'html',
             'mobile': False,
             'print': False,
             'toc': True
@@ -646,65 +805,214 @@ class ReadmeConverter(TkinterDnD.Tk):
             'bundle_assets': True,
             'optimize_assets': True
         }
+        
+        # Apply modern UI
+        ModernUI.configure_styles()
+        
         self.create_widgets()
-        self.create_menu()
+        self.create_modern_menu()
+
+    def create_modern_menu(self):
+        """Create a modern custom menu bar"""
+        menu_frame = tk.Frame(self, bg=COLORS['primary'])
+        menu_frame.pack(fill='x', pady=0)
+        
+        # Left side menu items
+        left_frame = tk.Frame(menu_frame, bg=COLORS['primary'])
+        left_frame.pack(side='left', fill='y')
+        
+        # File menu dropdown
+        file_btn = self.create_menu_button(left_frame, "File")
+        file_menu = tk.Menu(file_btn, tearoff=0, bg=COLORS['surface'], 
+                          fg=COLORS['text'],
+                          activebackground=COLORS['secondary'],
+                          activeforeground='white',
+                          bd=0)
+        file_menu.add_command(label=_("Select Files"), command=self.select_files)
+        file_menu.add_command(label=_("Select Output Directory"), command=self.select_output_dir)
+        file_menu.add_separator()
+        file_menu.add_command(label=_("Exit"), command=self.quit)
+        file_btn.config(menu=file_menu)
+        
+        # Export menu dropdown
+        export_btn = self.create_menu_button(left_frame, "Export")
+        export_menu = tk.Menu(export_btn, tearoff=0, bg=COLORS['surface'],
+                            fg=COLORS['text'],
+                            activebackground=COLORS['secondary'],
+                            activeforeground='white',
+                            bd=0)
+        export_menu.add_command(label=_("Export Options..."), command=self.show_export_options)
+        export_menu.add_command(label=_("Export Settings..."), command=self.show_export_settings)
+        export_menu.add_separator()
+        export_menu.add_command(label=_("Quick Export"), command=lambda: self.convert_files(quick=True))
+        export_btn.config(menu=export_menu)
+        
+        # Right side buttons
+        right_frame = tk.Frame(menu_frame, bg=COLORS['primary'])
+        right_frame.pack(side='right', fill='y')
+        
+        # Theme button
+        theme_btn = tk.Button(right_frame, text="🎨", command=self.show_theme_manager,
+                          bg=COLORS['primary'],
+                          fg='white',
+                          activebackground=COLORS['primary_light'],
+                          activeforeground='white',
+                          bd=0,
+                          padx=15,
+                          font=('Segoe UI', 14),
+                          cursor='hand2')
+        theme_btn.pack(side='right', padx=5)
+        
+        # Settings button
+        settings_btn = tk.Button(right_frame, text="⚙️", command=self.show_export_customization,
+                             bg=COLORS['primary'],
+                             fg='white',
+                             activebackground=COLORS['primary_light'],
+                             activeforeground='white',
+                             bd=0,
+                             padx=15,
+                             font=('Segoe UI', 14),
+                             cursor='hand2')
+        settings_btn.pack(side='right', padx=5)
+
+    def create_menu_button(self, parent, text):
+        """Create a modern menu button"""
+        btn = tk.Menubutton(parent, text=text,
+                         bg=COLORS['primary'],
+                         fg='white',
+                         activebackground=COLORS['primary_light'],
+                         activeforeground='white',
+                         bd=0,
+                         padx=15,
+                         pady=8,
+                         font=('Segoe UI', 10),
+                         cursor='hand2')
+        btn.pack(side='left', padx=2)
+        return btn
 
     def create_widgets(self):
-        # Create and pack widgets
-        self.drop_label = tk.Label(self, text=_("Drop README files here or use the select button"),
-                                 bg='#f0f0f0', pady=20)
-        self.drop_label.pack(fill=tk.X, pady=10)
+        # Main container with new styling
+        main_frame = ttk.Frame(self, style='TFrame')
+        main_frame.pack(fill='both', expand=True, padx=20, pady=(10, 20))
+        
+        # Application header with new design
+        header_frame = ttk.Frame(main_frame, style='TFrame')
+        header_frame.pack(fill='x', pady=(0, 20))
+        
+        app_title = ttk.Label(header_frame, 
+                          text=_("README HTML Generator"),
+                          style='Header.TLabel')
+        app_title.pack(side='left')
+        
+        # Subtitle
+        app_subtitle = ttk.Label(header_frame,
+                             text=_("Convert your markdown files with style"),
+                             style='Subheader.TLabel')
+        app_subtitle.pack(side='left', padx=(10, 0))
+        
+        # White card for the drop zone with shadow effect
+        drop_card = tk.Frame(main_frame, 
+                         bg=COLORS['surface'],
+                         highlightbackground=COLORS['border'],
+                         highlightthickness=1)
+        drop_card.pack(fill='both', expand=True, padx=0, pady=0)
+        
+        # Add some padding inside the card
+        inner_padding = ttk.Frame(drop_card, style='Surface.TFrame')
+        inner_padding.pack(fill='both', expand=True, padx=15, pady=15)
+        
+        # Drop zone header 
+        self.drop_label = ttk.Label(inner_padding, 
+                                  text=_("Drop README files here or use the select button"),
+                                  font=('Segoe UI', 12), 
+                                  background=COLORS['surface'])
+        self.drop_label.pack(fill='x', pady=(0, 15))
 
-        # Configure text widget for drag and drop
-        self.files_text = tk.Text(self, height=10, width=60, bg='white')
-        self.files_text.pack(pady=10, padx=10, fill=tk.BOTH, expand=True)
+        # Configure text widget for drag and drop with modern styling
+        text_frame = ttk.Frame(inner_padding, style='Surface.TFrame')
+        text_frame.pack(fill='both', expand=True)
+        
+        self.files_text = tk.Text(text_frame, 
+                                height=10, 
+                                bg='white',
+                                borderwidth=1,
+                                relief='solid',
+                                font=('Segoe UI', 10),
+                                highlightthickness=1,
+                                highlightbackground=COLORS['border'],
+                                padx=10, 
+                                pady=10)
+        self.files_text.pack(fill='both', expand=True)
         
         # Enable drag and drop for text widget
         self.files_text.drop_target_register(DND_FILES)
         self.files_text.dnd_bind('<<Drop>>', self.drop_files)
 
-        # Buttons frame
-        btn_frame = tk.Frame(self)
-        btn_frame.pack(fill=tk.X, padx=10, pady=5)
+        # Buttons frame with modern style
+        btn_frame = ttk.Frame(inner_padding, style='Surface.TFrame')
+        btn_frame.pack(fill='x', pady=(15, 0))
 
-        self.select_btn = tk.Button(btn_frame, text=_("Select Files"), command=self.select_files)
-        self.select_btn.pack(side=tk.LEFT, padx=5)
+        self.select_btn = ttk.Button(btn_frame, text=_("Select Files"), 
+                                   command=self.select_files,
+                                   style='Primary.TButton')
+        self.select_btn.pack(side='left', padx=(0, 10))
 
-        self.output_btn = tk.Button(btn_frame, text=_("Select Output Directory"), command=self.select_output_dir)
-        self.output_btn.pack(side=tk.LEFT, padx=5)
+        self.output_btn = ttk.Button(btn_frame, text=_("Output Directory"), 
+                                   command=self.select_output_dir)
+        self.output_btn.pack(side='left', padx=5)
 
-        self.preview_btn = tk.Button(btn_frame, text=_("Preview"), command=self.preview_files)
-        self.preview_btn.pack(side=tk.LEFT, padx=5)
+        self.preview_btn = ttk.Button(btn_frame, text=_("Preview"), 
+                                   command=self.preview_files)
+        self.preview_btn.pack(side='left', padx=5)
 
-        self.convert_btn = tk.Button(btn_frame, text=_("Convert to HTML"), command=self.convert_files)
-        self.convert_btn.pack(side=tk.LEFT, padx=5)
+        self.convert_btn = ttk.Button(btn_frame, text=_("Convert to HTML"), 
+                                    command=self.convert_files,
+                                    style='Primary.TButton')
+        self.convert_btn.pack(side='left', padx=5)
 
-        self.clear_btn = tk.Button(btn_frame, text=_("Clear"), command=self.clear_files)
-        self.clear_btn.pack(side=tk.RIGHT, padx=5)
+        self.clear_btn = ttk.Button(btn_frame, text=_("Clear"), 
+                                  command=self.clear_files)
+        self.clear_btn.pack(side='right', padx=0)
 
-        # Add progress bar and cancel button
-        self.progress_frame = tk.Frame(self)
-        self.progress_frame.pack(fill=tk.X, padx=10, pady=5)
+        # Add modern progress bar with label
+        progress_container = ttk.Frame(inner_padding, style='Surface.TFrame')
+        progress_container.pack(fill='x', pady=(15, 0))
         
-        self.progress_bar = Progressbar(self.progress_frame, mode='determinate')
-        self.progress_bar.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 5))
+        progress_label = ttk.Label(progress_container, text=_("Progress:"), 
+                                 background=COLORS['surface'])
+        progress_label.pack(side='left', padx=(0, 10))
         
-        self.cancel_btn = tk.Button(self.progress_frame, text=_("Cancel"), command=self.cancel_conversion_task)
-        self.cancel_btn.pack(side=tk.RIGHT)
+        self.progress_bar = ttk.Progressbar(progress_container, 
+                                         mode='determinate', 
+                                         style='TProgressbar')
+        self.progress_bar.pack(side='left', fill='x', expand=True)
+        
+        self.cancel_btn = ttk.Button(progress_container, text=_("Cancel"), 
+                                   command=self.cancel_conversion_task)
+        self.cancel_btn.pack(side='right', padx=(10, 0))
         self.cancel_btn.pack_forget()  # Hide initially
 
     def create_menu(self):
-        menubar = tk.Menu(self)
+        # Create a modern styled menu
+        menubar = tk.Menu(self, bg=COLORS['background'], fg=COLORS['text'],
+                       activebackground=COLORS['primary_light'],
+                       activeforeground='white',
+                       relief='flat',
+                       bd=0)
         self.config(menu=menubar)
 
         # File menu
-        file_menu = tk.Menu(menubar, tearoff=0)
+        file_menu = tk.Menu(menubar, tearoff=0, bg=COLORS['surface'], fg=COLORS['text'],
+                         activebackground=COLORS['primary_light'],
+                         activeforeground='white')
         menubar.add_cascade(label=_("File"), menu=file_menu)
         file_menu.add_command(label=_("Select Files"), command=self.select_files)
         file_menu.add_command(label=_("Select Output Directory"), command=self.select_output_dir)
         
         # Recent files submenu
-        self.recent_menu = tk.Menu(file_menu, tearoff=0)
+        self.recent_menu = tk.Menu(file_menu, tearoff=0, bg=COLORS['surface'], fg=COLORS['text'],
+                                activebackground=COLORS['primary_light'],
+                                activeforeground='white')
         file_menu.add_cascade(label=_("Recent Files"), menu=self.recent_menu)
         self.update_recent_menu()
         
@@ -714,7 +1022,9 @@ class ReadmeConverter(TkinterDnD.Tk):
         file_menu.add_command(label=_("Exit"), command=self.quit)
 
         # Export menu
-        export_menu = tk.Menu(menubar, tearoff=0)
+        export_menu = tk.Menu(menubar, tearoff=0, bg=COLORS['surface'], fg=COLORS['text'],
+                           activebackground=COLORS['primary_light'],
+                           activeforeground='white')
         menubar.add_cascade(label=_("Export"), menu=export_menu)
         export_menu.add_command(label=_("Export Options..."), command=self.show_export_options)
         export_menu.add_command(label=_("Export Settings..."), command=self.show_export_settings)
@@ -723,7 +1033,9 @@ class ReadmeConverter(TkinterDnD.Tk):
         export_menu.add_command(label=_("Customize Export..."), command=self.show_export_customization)
 
         # Add Themes menu
-        themes_menu = tk.Menu(menubar, tearoff=0)
+        themes_menu = tk.Menu(menubar, tearoff=0, bg=COLORS['surface'], fg=COLORS['text'],
+                           activebackground=COLORS['primary_light'],
+                           activeforeground='white')
         menubar.add_cascade(label=_("Themes"), menu=themes_menu)
         themes_menu.add_command(label=_("Theme Manager..."), command=self.show_theme_manager)
 
