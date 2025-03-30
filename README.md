@@ -15,7 +15,7 @@ This project is a GUI application that converts Markdown README files to HTML. I
 
 1. Clone the repository:
     ```sh
-    git clone https://github.com/yourusername/readme-to-html.git
+    git clone https://github.com/Simonaven265/readme-to-html.git
     cd readme-to-html
     ```
 
