@@ -1,70 +1,130 @@
-# README to HTML Converter
+# README HTML Generator
 
-This project is a GUI application that converts Markdown README files to HTML. It allows users to customize themes, inject custom CSS and JavaScript, and preview the converted HTML.
+A program for converting Markdown files to HTML with advanced customization options. The application enables creating elegant HTML documents from README files and other Markdown documents with the ability to personalize appearance, add custom CSS, and JavaScript.
 
-## Features
+## Main Features
 
-- Drag and drop support for Markdown files
-- Theme management with color, font, and custom CSS/JS settings
-- Live preview of the converted HTML with the selected theme
-- Export options for mobile optimization, print-friendly format, and table of contents
-- Recent files list for quick access
-- Localization support
+- **Easy Markdown to HTML Conversion**:
+  - Drag and drop Markdown files into the application
+  - Support for Markdown syntax with extensions (code blocks, tables, syntax highlighting)
+  - Preview conversion before saving
+
+- **Advanced Theme Management**:
+  - Create, edit, and delete custom themes
+  - Full control over colors (background, text, headings, links, code blocks)
+  - Choose font family and text size
+  - Real-time theme preview
+  - Switch between light and dark modes
+
+- **Flexible Export Options**:
+  - Mobile optimization
+  - Print-friendly mode
+  - Automatic table of contents generation
+  - Embedded images in HTML file
+  - Add custom metadata
+
+- **Advanced Customization**:
+  - Inject custom CSS and JavaScript code
+  - Add custom HTML headers and footers
+  - Asset handling options (bundling, optimization)
+  - Custom output filename patterns
+
+- **User-Friendly Interface**:
+  - Modern design with blue-turquoise color scheme
+  - Recently used files list
+  - Multi-language support (localization)
+  - Progress bar with conversion cancellation option
+
+## System Requirements
+
+- Python 3.6 or newer
+- Dependencies:
+  - markdown
+  - tkinterdnd2
+  - webbrowser
+  - PIL (optional, for image handling)
 
 ## Installation
 
 1. Clone the repository:
-    ```sh
-    git clone https://github.com/Simonaven265/readme-to-html.git
-    cd readme-to-html
-    ```
+   ```sh
+   git clone https://github.com/yourusername/readmehtmlgenerator.git
+   cd readmehtmlgenerator
+   ```
 
-2. Install the required dependencies:
-    ```sh
-    pip install -r requirements.txt
-    ```
+2. Install required packages:
+   ```sh
+   pip install -r requirements.txt
+   ```
 
-## Usage
+## How to Use
 
 1. Run the application:
-    ```sh
-    python readme_converter.py
-    ```
+   ```sh
+   python readme_converter.py
+   ```
 
-2. Drag and drop Markdown files into the application or use the "Select Files" button to choose files.
+2. Drag Markdown files into the application window or use the "Select Files" button
 
-3. Customize the theme using the "Theme Manager" under the "Themes" menu.
+3. Choose output directory by clicking "Output Directory" (optional)
 
-4. Preview the converted HTML by clicking the "Preview" button.
+4. Customize export options from the "Export" → "Export Options..." menu
 
-5. Export the HTML using the "Convert to HTML" button or customize export settings under the "Export" menu.
+5. You can preview the result by clicking the "Preview" button
+
+6. Click "Convert to HTML" to convert files
 
 ## Theme Management
 
-The Theme Manager allows you to create, edit, and delete themes. You can customize the following settings:
+In the Theme Manager (accessible via the 🎨 button) you can:
 
-- Background color
-- Text color
-- Heading color
-- Link color
-- Code background color
-- Code text color
-- Font family
-- Font size
-- Custom CSS
-- Custom JavaScript
+- Create new themes
+- Edit existing themes
+- Customize:
+  - Background, text, heading, and link colors
+  - Code block colors and styles
+  - Fonts and text sizes
+  - Add custom CSS and JavaScript
+- See a preview of the theme on a selected Markdown file
+- Apply a theme as default
 
 ## Export Options
 
-The Export Options dialog allows you to customize the export settings:
+In the "Export Options" window you can adjust:
 
-- Mobile Optimized: Adds a viewport meta tag for responsive design.
-- Print Friendly: Adds print styles for better print formatting.
-- Include Table of Contents: Generates a table of contents based on the headings in the Markdown file.
+- **Mobile Format**: optimizes HTML for mobile devices
+- **Print Format**: adds styles to facilitate printing
+- **Table of Contents**: automatically generates a table of contents based on headings
 
-## Localization
+In the "Export Settings" window you can set:
 
-The application supports localization. To add a new language, create a `.po` file in the `locales` directory and compile it to a `.mo` file.
+- **Filename Pattern**: customize the output filename
+- **Metadata**: add author, description, keywords
+- **Custom HTML**: add custom header and footer
+
+## Advanced Customization
+
+In the "Export Customization" tab (⚙️ button) you can:
+
+- Add custom CSS code
+- Add custom JavaScript code
+- Enable asset bundling with HTML
+- Enable asset optimization
+
+## Multi-language Support
+
+The application supports interface translation. To add a new language:
+
+1. Create a `.po` file in the `locales` directory
+2. Compile it to a `.mo` file
+3. The language will be automatically detected based on system settings
+
+## Tips
+
+- You can quickly export files using "Quick Export" from the Export menu
+- Use table of contents for long documents to facilitate navigation
+- All settings are automatically saved in the preferences.json file
+- Switching between light/dark mode is available in the exported HTML
 
 ⠀⠀⠀⠀⠀ ⠀⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀   ⠀⣀⡀⠀⠀⠀⠀⠀⠀
 ⠀⠀⣀⡴⠞⠉⢉⡿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢯⡉⠙⠳⣦⡀⠀⠀
@@ -89,4 +149,4 @@ The application supports localization. To add a new language, create a `.po` fil
 ⠀⠀⠀⠀⠀⠀⣿⠏⠄⢠⣾⣿⣿⣿⣿⣌⠳⣄⢹⡷⣄⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠹⣧⡷⠏⣿⣿⡏⠈⣿⣿⣿⣾⣿⠛⠻⠷⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠉⠀ ⠀⢹⣿⡇ ⠀⣿⡟⠈⠉⠋⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀  ⠉⠀     ⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀  ⠉⠀     ⠉
