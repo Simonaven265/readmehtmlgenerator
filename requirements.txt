@@ -1,5 +1,4 @@
 markdown==3.4.3
-pygments==2.15.1
-pymdown-extensions==10.3
 tkinterdnd2==0.3.0
-weasyprint==59.0
+Pygments==2.15.1
+WeasyPrint==59.0
