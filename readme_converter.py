@@ -245,6 +245,13 @@ class ReadmeConverter(TkinterDnD.Tk):
         )
         browse_btn.pack(side='left', padx=5)
         
+        preview_btn = ModernUI.create_custom_button(
+            self.buttons_frame,
+            _("Preview"),
+            self.preview_file
+        )
+        preview_btn.pack(side='left', padx=5)
+        
         convert_btn = ModernUI.create_custom_button(
             self.buttons_frame,
             _("Convert to HTML"),
@@ -290,6 +297,7 @@ class ReadmeConverter(TkinterDnD.Tk):
         )
         self.menu_bar.add_cascade(label=_("File"), menu=self.file_menu)
         self.file_menu.add_command(label=_("Open..."), command=self.browse_files)
+        self.file_menu.add_command(label=_("Preview..."), command=self.preview_file)
         self.file_menu.add_command(label=_("Export Settings..."), command=self.show_export_settings)
         self.file_menu.add_separator()
         
@@ -620,6 +628,23 @@ class ReadmeConverter(TkinterDnD.Tk):
             prefs['recent_files'] = self.recent_files
             self.save_preferences(prefs)
             self.update_recent_menu()
+    
+    def preview_file(self):
+        """Preview currently selected file in default browser"""
+        current_file = self.files_text.get("1.0", tk.END).strip().split("\n")[0]
+        if not current_file:
+            messagebox.showwarning(_("No File"), _("Please select a file to preview."))
+            return
+            
+        html = self.convert_readme_to_html(current_file, preview_mode=True)
+        
+        # Create temporary file
+        with tempfile.NamedTemporaryFile('w', delete=False, suffix='.html', encoding='utf-8') as f:
+            f.write(html)
+            self.temp_preview_file = f.name
+        
+        # Open in browser
+        webbrowser.open('file://' + self.temp_preview_file)
 
 class ExportOptionsDialog(tk.Toplevel):
     def __init__(self, parent):
