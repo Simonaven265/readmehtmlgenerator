@@ -14,7 +14,6 @@ import json
 import base64
 from urllib.parse import urljoin
 from tkinter import colorchooser
-import json
 from datetime import datetime
 import gettext
 
@@ -1473,21 +1472,29 @@ class ReadmeConverter(TkinterDnD.Tk):
 
     def embed_images(self, html, base_path):
         """Embed images as base64 in the HTML content."""
+        import re
+        
         def replace_image(match):
             img_tag = match.group(0)
             img_src = match.group(1)
-            img_path = urljoin(f'file://{base_path}', img_src)
+            
+            # Handle relative paths properly
+            base_dir = os.path.dirname(base_path)
+            img_path = os.path.join(base_dir, img_src)
+            
             try:
                 with open(img_path, 'rb') as img_file:
                     img_data = img_file.read()
                     img_base64 = base64.b64encode(img_data).decode('utf-8')
-                    img_ext = os.path.splitext(img_path)[1][1:]
-                    return img_tag.replace(img_src, f'data:image/{img_ext};base64,{img_base64}')
+                    img_ext = os.path.splitext(img_path)[1][1:] or 'png'  # Default to png if no extension
+                    return img_tag.replace(f'src="{img_src}"', f'src="data:image/{img_ext};base64,{img_base64}"')
             except Exception as e:
                 print(f"Failed to embed image {img_src}: {e}")
                 return img_tag
-
-        return html.replace('<img src="', '<img src="data:image/')
+        
+        # Use regular expression to find image tags and process them
+        pattern = r'<img[^>]*src="([^"]*)"[^>]*>'
+        return re.sub(pattern, replace_image, html)
 
     def generate_toc(self, html):
         """Generate table of contents from HTML content"""
@@ -1522,7 +1529,9 @@ def main():
         if not os.path.exists(readme_path):
             print(f"Error: File {readme_path} not found")
             return
-        output_path = convert_readme_to_html(readme_path)
+        
+        converter = ReadmeConverter()
+        output_path = converter.convert_readme_to_html(readme_path)
         print(f"Successfully converted! Output saved to: {output_path}")
     else:
         # GUI mode
