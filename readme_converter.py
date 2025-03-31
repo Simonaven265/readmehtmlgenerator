@@ -25,22 +25,22 @@ gettext.bindtextdomain('messages', localedir)
 gettext.textdomain('messages')
 _ = gettext.gettext
 
-# Modern color scheme - Updated with dark blue/aqua theme
+# Modern dark theme color scheme
 COLORS = {
-    'primary': '#1e3d59',      # Dark blue
-    'primary_light': '#2d5d86', # Lighter blue
-    'primary_dark': '#152c40',  # Darker blue
-    'secondary': '#17a2b8',     # Aqua
-    'secondary_light': '#1fc8e3', # Light aqua
-    'accent': '#00ffff',        # Cyan accent
-    'background': '#f0f7fa',    # Very light blue-tinted background
-    'surface': '#ffffff',       # White surface
-    'text': '#2c3e50',         # Dark text
-    'text_light': '#6c8998',   # Blue-gray text
-    'border': '#b8daff',       # Light blue border
-    'success': '#28a745',      # Green for success states
-    'warning': '#ffc107',      # Yellow for warnings
-    'error': '#dc3545'         # Red for errors
+    'primary': '#2b3d4f',
+    'primary_light': '#3d5a7a',
+    'primary_dark': '#1a2530',
+    'secondary': '#00b4d8',
+    'secondary_light': '#48cae4',
+    'accent': '#00e5ff',
+    'background': '#1a1a1a',
+    'surface': '#2d2d2d',
+    'text': '#e0e0e0',  
+    'text_light': '#b0b0b0', 
+    'border': '#404040',
+    'success': '#2dd4bf',
+    'warning': '#fbbf24',
+    'error': '#ef4444' 
 }
 
 class ModernUI:
@@ -49,14 +49,14 @@ class ModernUI:
     def configure_styles():
         style = ttk.Style()
         
-        # Frame styling
+        # Frame styling - dark
         style.configure('TFrame', background=COLORS['background'])
         style.configure('Surface.TFrame', background=COLORS['surface'])
         
-        # Button styling - More modern and refined
+        # Button styling - dark modern look
         style.configure('TButton', 
                       background=COLORS['primary'],
-                      foreground='white',
+                      foreground=COLORS['text'],
                       padding=(15, 8),
                       font=('Segoe UI', 10),
                       borderwidth=0)
@@ -64,10 +64,10 @@ class ModernUI:
                 background=[('active', COLORS['primary_light']), 
                            ('pressed', COLORS['primary_dark'])])
         
-        # Primary button with aqua accent
+        # Primary button with bright accent
         style.configure('Primary.TButton', 
                       background=COLORS['secondary'],
-                      foreground='white')
+                      foreground=COLORS['text'])
         style.map('Primary.TButton',
                 background=[('active', COLORS['secondary_light']),
                            ('pressed', COLORS['secondary'])])
@@ -77,42 +77,43 @@ class ModernUI:
                       background=COLORS['accent'],
                       foreground=COLORS['primary_dark'])
         
-        # Label styling - More refined typography
+        # Label styling - light text on dark
         style.configure('TLabel', 
                       background=COLORS['background'],
                       foreground=COLORS['text'],
                       font=('Segoe UI', 10))
         
-        # Header label with new style
+        # Header label with accent color
         style.configure('Header.TLabel', 
                       font=('Segoe UI', 24, 'bold'),
-                      foreground=COLORS['primary'])
+                      foreground=COLORS['secondary'])
         
         # Subheader label
         style.configure('Subheader.TLabel', 
                       font=('Segoe UI', 14),
                       foreground=COLORS['text_light'])
         
-        # Entry styling with better contrast
+        # Entry styling for dark theme
         style.configure('TEntry', 
                       background=COLORS['surface'],
                       foreground=COLORS['text'],
                       fieldbackground=COLORS['surface'],
+                      insertcolor=COLORS['text'],
                       padding=8,
                       font=('Segoe UI', 10))
         
-        # Checkbutton with new design
+        # Checkbutton with light text
         style.configure('TCheckbutton', 
                       background=COLORS['background'],
                       foreground=COLORS['text'],
                       font=('Segoe UI', 10))
         
-        # Progressbar with aqua color
+        # Progressbar with bright accent
         style.configure('TProgressbar', 
                       background=COLORS['secondary'],
-                      troughcolor=COLORS['background'])
+                      troughcolor=COLORS['surface'])
                       
-        # Custom dropdown styling
+        # Custom dropdown styling for dark theme
         style.configure('Dropdown.TMenubutton',
                      background=COLORS['surface'],
                      foreground=COLORS['text'],
@@ -218,7 +219,13 @@ class ReadmeConverter(TkinterDnD.Tk):
             width=50,
             font=('Segoe UI', 10),
             bg=COLORS['surface'],
-            fg=COLORS['text']
+            fg=COLORS['text'],
+            insertbackground=COLORS['text'],  # Cursor color
+            selectbackground=COLORS['primary_light'],  # Selection background
+            selectforeground=COLORS['text'],  # Selection text color
+            relief='flat',  # Remove border
+            padx=10,  # Add horizontal padding
+            pady=10   # Add vertical padding
         )
         self.files_text.pack(fill='both', expand=True)
         
@@ -269,18 +276,32 @@ class ReadmeConverter(TkinterDnD.Tk):
         
     def create_menu(self):
         """Create the main menu bar"""
-        self.menu_bar = tk.Menu(self)
+        self.menu_bar = tk.Menu(self, bg=COLORS['surface'], fg=COLORS['text'])
         self.config(menu=self.menu_bar)
         
         # File menu
-        self.file_menu = tk.Menu(self.menu_bar, tearoff=0)
+        self.file_menu = tk.Menu(
+            self.menu_bar,
+            tearoff=0,
+            bg=COLORS['surface'],
+            fg=COLORS['text'],
+            activebackground=COLORS['primary_light'],
+            activeforeground=COLORS['text']
+        )
         self.menu_bar.add_cascade(label=_("File"), menu=self.file_menu)
         self.file_menu.add_command(label=_("Open..."), command=self.browse_files)
         self.file_menu.add_command(label=_("Export Settings..."), command=self.show_export_settings)
         self.file_menu.add_separator()
         
         # Recent files submenu
-        self.recent_menu = tk.Menu(self.file_menu, tearoff=0)
+        self.recent_menu = tk.Menu(
+            self.file_menu,
+            tearoff=0,
+            bg=COLORS['surface'],
+            fg=COLORS['text'],
+            activebackground=COLORS['primary_light'],
+            activeforeground=COLORS['text']
+        )
         self.file_menu.add_cascade(label=_("Recent Files"), menu=self.recent_menu)
         self.update_recent_menu()
         
@@ -288,7 +309,14 @@ class ReadmeConverter(TkinterDnD.Tk):
         self.file_menu.add_command(label=_("Exit"), command=self.quit)
         
         # Options menu
-        options_menu = tk.Menu(self.menu_bar, tearoff=0)
+        options_menu = tk.Menu(
+            self.menu_bar,
+            tearoff=0,
+            bg=COLORS['surface'],
+            fg=COLORS['text'],
+            activebackground=COLORS['primary_light'],
+            activeforeground=COLORS['text']
+        )
         self.menu_bar.add_cascade(label=_("Options"), menu=options_menu)
         options_menu.add_command(label=_("Export Options..."), command=self.show_export_options)
         options_menu.add_command(label=_("Theme Settings..."), command=self.show_theme_settings)
@@ -578,36 +606,41 @@ class ExportOptionsDialog(tk.Toplevel):
         self.toc_var = tk.BooleanVar(master=self, value=True)
         
         # Create options frame
-        options_frame = ttk.Frame(self)
+        options_frame = ttk.Frame(self, style='Surface.TFrame')
         options_frame.pack(fill='both', expand=True, padx=20, pady=20)
         
-        # Add options
+        # Add options with dark theme
+        checkbutton_style = {'style': 'TCheckbutton'}
         ttk.Checkbutton(
             options_frame,
             text=_("Mobile-friendly layout"),
-            variable=self.mobile_var
+            variable=self.mobile_var,
+            **checkbutton_style
         ).pack(anchor='w', pady=5)
         
         ttk.Checkbutton(
             options_frame,
             text=_("Print-friendly version"),
-            variable=self.print_var
+            variable=self.print_var,
+            **checkbutton_style
         ).pack(anchor='w', pady=5)
         
         ttk.Checkbutton(
             options_frame,
             text=_("Include table of contents"),
-            variable=self.toc_var
+            variable=self.toc_var,
+            **checkbutton_style
         ).pack(anchor='w', pady=5)
         
-        # Add options description
+        # Add options description with dark theme
         desc_text = tk.Text(
             options_frame,
             height=6,
             wrap='word',
             font=('Segoe UI', 9),
             bg=COLORS['surface'],
-            fg=COLORS['text_light']
+            fg=COLORS['text_light'],
+            insertbackground=COLORS['text']  # Cursor color
         )
         desc_text.pack(fill='both', expand=True, pady=10)
         desc_text.insert('1.0', _("""Mobile-friendly: Optimizes layout for mobile devices
@@ -616,8 +649,8 @@ Table of contents: Automatically generates navigation
 """))
         desc_text.configure(state='disabled')
         
-        # Buttons
-        button_frame = ttk.Frame(self)
+        # Buttons with dark theme
+        button_frame = ttk.Frame(self, style='Surface.TFrame')
         button_frame.pack(fill='x', padx=20, pady=(0, 20))
         
         ttk.Button(
@@ -650,11 +683,11 @@ class ThemeSettingsDialog(tk.Toplevel):
         self.geometry("500x400")
         self.configure(bg=COLORS['background'])
         
-        # Create main frame
-        main_frame = ttk.Frame(self)
+        # Create main frame with dark theme
+        main_frame = ttk.Frame(self, style='Surface.TFrame')
         main_frame.pack(fill='both', expand=True, padx=20, pady=20)
         
-        # Theme selector
+        # Theme selector with dark styling
         ttk.Label(
             main_frame,
             text=_("Select Theme:"),
@@ -662,16 +695,18 @@ class ThemeSettingsDialog(tk.Toplevel):
         ).pack(anchor='w', pady=(0, 10))
         
         themes = ['default', 'dark', 'light', 'custom']
-        self.theme_var = tk.StringVar(value='default')
+        self.theme_var = tk.StringVar(value='dark')  # Set dark as default
         
         for theme in themes:
-            ttk.Radiobutton(
+            rb = ttk.Radiobutton(
                 main_frame,
                 text=theme.capitalize(),
                 value=theme,
                 variable=self.theme_var,
-                command=self.on_theme_change
-            ).pack(anchor='w', pady=2)
+                command=self.on_theme_change,
+                style='TRadiobutton'
+            )
+            rb.pack(anchor='w', pady=2)
         
         # Custom colors section
         ttk.Label(
@@ -680,7 +715,7 @@ class ThemeSettingsDialog(tk.Toplevel):
             style='Header.TLabel'
         ).pack(anchor='w', pady=(20, 10))
         
-        color_frame = ttk.Frame(main_frame)
+        color_frame = ttk.Frame(main_frame, style='Surface.TFrame')
         color_frame.pack(fill='x')
         
         self.color_buttons = {}
@@ -695,12 +730,13 @@ class ThemeSettingsDialog(tk.Toplevel):
             btn = ttk.Button(
                 color_frame,
                 text=color_name,
-                command=lambda k=color_key: self.choose_color(k)
+                command=lambda k=color_key: self.choose_color(k),
+                style='Dropdown.TMenubutton'  # Use dropdown style for better dark theme appearance
             )
             btn.pack(side='left', padx=5)
             self.color_buttons[color_key] = btn
         
-        # Preview section
+        # Preview section with dark theme
         ttk.Label(
             main_frame,
             text=_("Preview:"),
@@ -712,13 +748,16 @@ class ThemeSettingsDialog(tk.Toplevel):
             height=8,
             width=40,
             font=('Segoe UI', 10),
-            wrap='word'
+            wrap='word',
+            bg=COLORS['surface'],
+            fg=COLORS['text'],
+            insertbackground=COLORS['text']
         )
         self.preview.pack(fill='both', expand=True)
         self.preview.insert('1.0', _("Preview text with some **markdown** and `code`"))
         
-        # Buttons
-        button_frame = ttk.Frame(self)
+        # Buttons with dark theme
+        button_frame = ttk.Frame(self, style='Surface.TFrame')
         button_frame.pack(fill='x', padx=20, pady=(0, 20))
         
         ttk.Button(
@@ -731,8 +770,12 @@ class ThemeSettingsDialog(tk.Toplevel):
         ttk.Button(
             button_frame,
             text=_("Cancel"),
-            command=self.destroy
+            command=self.destroy,
+            style='TButton'
         ).pack(side='right')
+        
+        # Initialize with dark theme
+        self.on_theme_change()
     
     def on_theme_change(self):
         """Handle theme change"""
