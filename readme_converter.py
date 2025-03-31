@@ -1176,8 +1176,16 @@ class ReadmeConverter(TkinterDnD.Tk):
         if not files:
             messagebox.showwarning(_("Warning"), _("No files selected"))
             return
-            
-        # Reset cancel flag
+        
+        # Add format selection if not quick export
+        if not quick and not format:
+            format = messagebox.askyesno(
+                _("Export Format"),
+                _("Export to PDF? (No = HTML)")
+            )
+            format = "pdf" if format else "html"
+        
+        # Reset cancel flag    
         self.cancel_conversion = False
         
         # Show cancel button and reset progress
@@ -1186,10 +1194,13 @@ class ReadmeConverter(TkinterDnD.Tk):
         self.progress_bar['maximum'] = len(files)
         
         # Start conversion in separate thread
-        conversion_thread = threading.Thread(target=self._convert_files_thread, args=(files,))
+        conversion_thread = threading.Thread(
+            target=self._convert_files_thread, 
+            args=(files, format)
+        )
         conversion_thread.start()
 
-    def _convert_files_thread(self, files):
+    def _convert_files_thread(self, files, format):
         successful = 0
         failed = 0
         
@@ -1198,7 +1209,10 @@ class ReadmeConverter(TkinterDnD.Tk):
                 break
                 
             try:
-                output_path = self.convert_readme_to_html(file, self.output_dir)
+                if format == "pdf":
+                    output_path = self.convert_readme_to_pdf(file, self.output_dir)
+                else:
+                    output_path = self.convert_readme_to_html(file, self.output_dir)
                 successful += 1
                 # Update UI from main thread
                 self.after(0, self._update_progress, i + 1, _("Converted {file} to {output_path}").format(file=file, output_path=output_path))
@@ -1436,6 +1450,25 @@ class ReadmeConverter(TkinterDnD.Tk):
         with open(output_path, 'w', encoding='utf-8') as f:
             f.write(html_template)
 
+        return output_path
+
+    def convert_readme_to_pdf(self, readme_path, output_dir=None):
+        from weasyprint import HTML, CSS
+        
+        # Generate HTML first
+        html_content = self.convert_readme_to_html(readme_path, preview_mode=True)
+        
+        # Generate output path
+        output_path = Path(readme_path).with_suffix('.pdf')
+        if output_dir:
+            output_path = Path(output_dir) / output_path.name
+        
+        # Convert to PDF
+        HTML(string=html_content).write_pdf(
+            output_path,
+            stylesheets=[CSS(string=self.get_theme_css())]
+        )
+        
         return output_path
 
     def embed_images(self, html, base_path):
