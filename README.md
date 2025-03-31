@@ -48,7 +48,7 @@ A program for converting Markdown files to HTML with advanced customization opti
 
 1. Clone the repository:
    ```sh
-   git clone https://github.com/yourusername/readmehtmlgenerator.git
+   git clone https://github.com/simonaven265/readmehtmlgenerator.git
    cd readmehtmlgenerator
    ```
 
