@@ -322,12 +322,41 @@ class ReadmeConverter(TkinterDnD.Tk):
         options_menu.add_command(label=_("Theme Settings..."), command=self.show_theme_settings)
     
     def load_preferences(self):
-        """Load user preferences from JSON file"""
+        """Load user preferences from JSON file or create defaults"""
+        default_preferences = {
+            "recent_files": [],
+            "current_theme": "default",
+            "custom_themes": {},
+            "export_options": {
+                "mobile": False,
+                "print": False,
+                "toc": True
+            },
+            "export_settings": {
+                "filename_pattern": "{name}",
+                "metadata": {
+                    "author": "",
+                    "description": "",
+                    "keywords": ""
+                }
+            }
+        }
+
         try:
             with open('preferences.json', 'r') as f:
-                return json.load(f)
+                prefs = json.load(f)
+
+                # Ensure no local paths are included in recent_files
+                prefs['recent_files'] = [
+                    file for file in prefs.get('recent_files', [])
+                    if os.path.exists(file)
+                ]
+
+                return prefs
         except (FileNotFoundError, json.JSONDecodeError):
-            return {}
+            # Save default preferences if file is missing or corrupted
+            self.save_preferences(default_preferences)
+            return default_preferences
     
     def save_preferences(self, prefs):
         """Save user preferences to JSON file"""
