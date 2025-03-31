@@ -16,6 +16,7 @@ from urllib.parse import urljoin
 from tkinter import colorchooser
 from datetime import datetime
 import gettext
+import math
 
 # Set up translation
 localedir = Path(__file__).parent / 'locales'
@@ -909,18 +910,19 @@ class ReadmeConverter(TkinterDnD.Tk):
                              style='Subheader.TLabel')
         app_subtitle.pack(side='left', padx=(10, 0))
         
-        # White card for the drop zone with shadow effect
-        drop_card = tk.Frame(main_frame, 
-                         bg=COLORS['surface'],
-                         highlightbackground=COLORS['border'],
-                         highlightthickness=1)
-        drop_card.pack(fill='both', expand=True, padx=0, pady=0)
+        # Animated drop zone
+        self.drop_zone = AnimatedDropZone(main_frame, 
+                                       bg=COLORS['surface'], 
+                                       active_bg=COLORS['secondary_light'],
+                                       border_color=COLORS['border'],
+                                       active_border=COLORS['secondary'])
+        self.drop_zone.pack(fill='both', expand=True, padx=0, pady=0)
         
         # Add some padding inside the card
-        inner_padding = ttk.Frame(drop_card, style='Surface.TFrame')
-        inner_padding.pack(fill='both', expand=True, padx=15, pady=15)
+        inner_padding = ttk.Frame(self.drop_zone.content, style='Surface.TFrame')
+        inner_padding.pack(fill='both', expand=True)
         
-        # Drop zone header 
+        # Drop zone header with animation
         self.drop_label = ttk.Label(inner_padding, 
                                   text=_("Drop README files here or use the select button"),
                                   font=('Segoe UI', 12), 
@@ -946,38 +948,50 @@ class ReadmeConverter(TkinterDnD.Tk):
         # Enable drag and drop for text widget
         self.files_text.drop_target_register(DND_FILES)
         self.files_text.dnd_bind('<<Drop>>', self.drop_files)
+        self.files_text.dnd_bind('<<DragEnter>>', self._drag_enter)
+        self.files_text.dnd_bind('<<DragLeave>>', self._drag_leave)
 
-        # Buttons frame with modern style
+        # Buttons frame with animated buttons
         btn_frame = ttk.Frame(inner_padding, style='Surface.TFrame')
         btn_frame.pack(fill='x', pady=(15, 0))
 
-        self.select_btn = ttk.Button(btn_frame, text=_("Select Files"), 
-                                   command=self.select_files,
-                                   style='Primary.TButton')
+        # Replace buttons with animated ones
+        self.select_btn = AnimatedButton(btn_frame, 
+                                      text=_("Select Files"), 
+                                      command=self.select_files,
+                                      bg=COLORS['secondary'])
         self.select_btn.pack(side='left', padx=(0, 10))
 
-        self.output_btn = ttk.Button(btn_frame, text=_("Output Directory"), 
-                                   command=self.select_output_dir)
+        self.output_btn = AnimatedButton(btn_frame, 
+                                      text=_("Output Directory"), 
+                                      command=self.select_output_dir,
+                                      bg=COLORS['primary'])
         self.output_btn.pack(side='left', padx=5)
 
-        self.preview_btn = ttk.Button(btn_frame, text=_("Preview"), 
-                                   command=self.preview_files)
+        self.preview_btn = AnimatedButton(btn_frame, 
+                                       text=_("Preview"), 
+                                       command=self.preview_files,
+                                       bg=COLORS['primary'])
         self.preview_btn.pack(side='left', padx=5)
 
-        self.convert_btn = ttk.Button(btn_frame, text=_("Convert to HTML"), 
-                                    command=self.convert_files,
-                                    style='Primary.TButton')
+        self.convert_btn = AnimatedButton(btn_frame, 
+                                       text=_("Convert to HTML"), 
+                                       command=self.convert_files,
+                                       bg=COLORS['secondary'])
         self.convert_btn.pack(side='left', padx=5)
 
-        self.clear_btn = ttk.Button(btn_frame, text=_("Clear"), 
-                                  command=self.clear_files)
+        self.clear_btn = AnimatedButton(btn_frame, 
+                                     text=_("Clear"), 
+                                     command=self.clear_files,
+                                     bg=COLORS['text_light'])
         self.clear_btn.pack(side='right', padx=0)
 
-        # Add modern progress bar with label
+        # Add animated progress bar with label
         progress_container = ttk.Frame(inner_padding, style='Surface.TFrame')
         progress_container.pack(fill='x', pady=(15, 0))
         
-        progress_label = ttk.Label(progress_container, text=_("Progress:"), 
+        progress_label = ttk.Label(progress_container, 
+                                 text=_("Progress:"), 
                                  background=COLORS['surface'])
         progress_label.pack(side='left', padx=(0, 10))
         
@@ -986,10 +1000,26 @@ class ReadmeConverter(TkinterDnD.Tk):
                                          style='TProgressbar')
         self.progress_bar.pack(side='left', fill='x', expand=True)
         
-        self.cancel_btn = ttk.Button(progress_container, text=_("Cancel"), 
-                                   command=self.cancel_conversion_task)
+        self.cancel_btn = AnimatedButton(progress_container, 
+                                      text=_("Cancel"), 
+                                      command=self.cancel_conversion_task,
+                                      bg=COLORS['error'])
         self.cancel_btn.pack(side='right', padx=(10, 0))
         self.cancel_btn.pack_forget()  # Hide initially
+        
+    def _drag_enter(self, event):
+        """Handle drag enter event to show visual feedback"""
+        self.drop_zone.set_active(True)
+        self.drop_label.configure(text=_("Release to add files..."))
+        
+    def _drag_leave(self, event):
+        """Handle drag leave event to reset visual feedback"""
+        self.drop_zone.set_active(False)
+        files_count = len([f for f in self.files_text.get(1.0, tk.END).strip().split('\n') if f])
+        if files_count:
+            self.drop_label.configure(text=f"{files_count} files selected")
+        else:
+            self.drop_label.configure(text=_("Drop README files here or use the select button"))
 
     def create_menu(self):
         # Create a modern styled menu
@@ -1396,6 +1426,173 @@ class ReadmeConverter(TkinterDnD.Tk):
         custom_css = f"\n/* Custom CSS */\n{self.export_customization['custom_css']}" if self.export_customization['custom_css'] else ""
         custom_js = f"\n/* Custom JavaScript */\n{self.export_customization['custom_js']}" if self.export_customization['custom_js'] else ""
         
+        # Enhanced JavaScript for animations and interactive elements
+        enhanced_js = """
+        // Theme toggle with animation
+        function toggleTheme() {
+            const body = document.body;
+            
+            // Add transition class
+            body.classList.add('mode-transition');
+            
+            // Toggle theme
+            body.classList.toggle('dark-theme');
+            
+            // Save preference
+            localStorage.setItem('theme', body.classList.contains('dark-theme') ? 'dark' : 'light');
+            
+            // Update button text
+            const themeButton = document.querySelector('.theme-toggle button');
+            themeButton.textContent = body.classList.contains('dark-theme') ? '☀️ Light Mode' : '🌙 Dark Mode';
+            
+            // Remove transition class after animation completes
+            setTimeout(() => {
+                body.classList.remove('mode-transition');
+            }, 500);
+        }
+        
+        // Add click animation to buttons
+        function addButtonEffects() {
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    const ripple = document.createElement('span');
+                    ripple.classList.add('ripple');
+                    this.appendChild(ripple);
+                    
+                    const rect = this.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    
+                    ripple.style.width = ripple.style.height = `${size}px`;
+                    ripple.style.left = `${e.clientX - rect.left - size/2}px`;
+                    ripple.style.top = `${e.clientY - rect.top - size/2}px`;
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+            });
+        }
+        
+        // Add scroll reveal animation for sections
+        function addScrollEffects() {
+            const sections = document.querySelectorAll('h1, h2, h3, h4, h5, h6, p, ul, ol, pre');
+            const options = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, options);
+            
+            sections.forEach(section => {
+                section.classList.add('reveal');
+                observer.observe(section);
+            });
+        }
+        
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check saved theme preference
+            if (localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark-theme');
+                
+                // Update button text if it exists
+                const themeButton = document.querySelector('.theme-toggle button');
+                if (themeButton) {
+                    themeButton.textContent = '☀️ Light Mode';
+                }
+            } else {
+                // Update button text if it exists
+                const themeButton = document.querySelector('.theme-toggle button');
+                if (themeButton) {
+                    themeButton.textContent = '🌙 Dark Mode';
+                }
+            }
+            
+            // Initialize animations
+            addButtonEffects();
+            
+            // Add scroll effects after a small delay (to not impact initial load)
+            setTimeout(addScrollEffects, 500);
+        });
+        
+        // Add smooth scrolling for anchor links
+        document.addEventListener('click', function(e) {
+            const target = e.target;
+            if (target.tagName === 'A' && target.getAttribute('href') && target.getAttribute('href').startsWith('#')) {
+                const id = target.getAttribute('href').slice(1);
+                const element = document.getElementById(id);
+                
+                if (element) {
+                    e.preventDefault();
+                    window.scrollTo({
+                        top: element.offsetTop - 20,
+                        behavior: 'smooth'
+                    });
+                }
+            }
+        });
+        """
+        
+        # Add animation styles
+        animation_css = """
+        /* Additional animation styles */
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            pointer-events: none;
+        }
+        
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+        
+        .reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s, transform 0.6s;
+        }
+        
+        .visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Code line highlight on hover */
+        pre code .line:hover {
+            background-color: rgba(0,0,0,0.05);
+        }
+        
+        .dark-theme pre code .line:hover {
+            background-color: rgba(255,255,255,0.05);
+        }
+        
+        /* Image zoom effect */
+        .container img {
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .container img.zoomed {
+            transform: scale(1.5);
+            z-index: 1000;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+        }
+        """
+        
         # Create full HTML document
         html_template = f"""
         <!DOCTYPE html>
@@ -1404,28 +1601,22 @@ class ReadmeConverter(TkinterDnD.Tk):
             <meta charset="UTF-8">
             {mobile_meta}
             {metadata}
+            <title>{title}</title>
             <style>
             {base_css}
             {theme_css}
             {print_styles}
             {custom_css}
+            {animation_css}
             </style>
             <script>
+            {enhanced_js}
             {custom_js}
-            function toggleTheme() {{
-                document.body.classList.toggle('dark-theme');
-                localStorage.setItem('theme', document.body.classList.contains('dark-theme') ? 'dark' : 'light');
-            }}
-            
-            // Check saved theme preference
-            if (localStorage.getItem('theme') === 'dark') {{
-                document.body.classList.add('dark-theme');
-            }}
             </script>
         </head>
         <body>
             <div class="theme-toggle">
-                <button onclick="toggleTheme()">Toggle Theme</button>
+                <button onclick="toggleTheme()">🌙 Dark Mode</button>
             </div>
             {self.export_settings['header']}
             {toc_html}
@@ -1433,6 +1624,14 @@ class ReadmeConverter(TkinterDnD.Tk):
                 {html}
             </div>
             {self.export_settings['footer']}
+            <script>
+                // Add zoom functionality to images
+                document.querySelectorAll('.container img').forEach(img => {{
+                    img.addEventListener('click', function() {{
+                        this.classList.toggle('zoomed');
+                    }});
+                }});
+            </script>
         </body>
         </html>
         """
@@ -1540,3 +1739,177 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+class AnimatedButton(tk.Button):
+    """Custom animated button with smooth hover effects"""
+    def __init__(self, parent, **kwargs):
+        bg_color = kwargs.pop('bg', COLORS['secondary'])
+        fg_color = kwargs.pop('fg', 'white')
+        hover_bg = kwargs.pop('hover_bg', COLORS['secondary_light'])
+        hover_fg = kwargs.pop('hover_fg', 'white')
+        
+        super().__init__(
+            parent,
+            bg=bg_color,
+            fg=fg_color,
+            activebackground=hover_bg,
+            activeforeground=hover_fg,
+            relief='flat',
+            borderwidth=0,
+            padx=15,
+            pady=8,
+            cursor='hand2',
+            font=('Segoe UI', 10),
+            **kwargs
+        )
+        
+        # Create animation effects
+        self.bg_color = bg_color
+        self.fg_color = fg_color
+        self.hover_bg = hover_bg
+        self.hover_fg = hover_fg
+        
+        self.bind("<Enter>", self.on_enter)
+        self.bind("<Leave>", self.on_leave)
+        
+        # For pulse animation
+        self.pulse_active = False
+        self.pulse_task = None
+    
+    def on_enter(self, event):
+        """Smooth color transition on hover"""
+        self.animate_color(self.bg_color, self.hover_bg)
+    
+    def on_leave(self, event):
+        """Smooth color transition on leave"""
+        if self.pulse_active:
+            return  # Don't interrupt the pulse animation
+        self.animate_color(self.hover_bg, self.bg_color)
+    
+    def animate_color(self, start_color, end_color, steps=10, interval=20):
+        """Animate color change from start to end color"""
+        start_r, start_g, start_b = self.hex_to_rgb(start_color)
+        end_r, end_g, end_b = self.hex_to_rgb(end_color)
+        
+        step_r = (end_r - start_r) / steps
+        step_g = (end_g - start_g) / steps
+        step_b = (end_b - start_b) / steps
+        
+        def update_color(step):
+            if step < steps:
+                r = int(start_r + step_r * step)
+                g = int(start_g + step_g * step)
+                b = int(start_b + step_b * step)
+                color = f'#{r:02x}{g:02x}{b:02x}'
+                self.config(bg=color)
+                self.after(interval, update_color, step + 1)
+        
+        update_color(0)
+    
+    def hex_to_rgb(self, hex_color):
+        """Convert hex color to RGB tuple"""
+        hex_color = hex_color.lstrip('#')
+        return tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
+    
+    def start_pulse(self):
+        """Start a pulsing animation effect"""
+        self.pulse_active = True
+        self._pulse_step()
+    
+    def _pulse_step(self):
+        """Single step of pulse animation"""
+        if not self.pulse_active:
+            return
+            
+        self.animate_color(self.bg_color, self.hover_bg)
+        self.pulse_task = self.after(700, self._pulse_reverse)
+    
+    def _pulse_reverse(self):
+        """Reverse pulse animation"""
+        if not self.pulse_active:
+            return
+            
+        self.animate_color(self.hover_bg, self.bg_color)
+        self.pulse_task = self.after(700, self._pulse_step)
+    
+    def stop_pulse(self):
+        """Stop the pulsing animation"""
+        self.pulse_active = False
+        if self.pulse_task:
+            self.after_cancel(self.pulse_task)
+            self.pulse_task = None
+        self.config(bg=self.bg_color)
+
+class AnimatedDropZone(tk.Frame):
+    """Advanced drop zone with visual feedback animations"""
+    def __init__(self, parent, **kwargs):
+        bg_color = kwargs.pop('bg', COLORS['surface'])
+        self.active_bg = kwargs.pop('active_bg', COLORS['secondary_light'])
+        self.border_color = kwargs.pop('border_color', COLORS['border'])
+        self.active_border = kwargs.pop('active_border', COLORS['secondary'])
+        
+        super().__init__(
+            parent,
+            bg=bg_color,
+            highlightbackground=self.border_color,
+            highlightthickness=2,
+            highlightcolor=self.active_border,
+            **kwargs
+        )
+        
+        # Create pulsing effect for border when file is over
+        self.is_active = False
+        self.pulse_task = None
+        
+        # Internal content frame with padding
+        self.content = tk.Frame(self, bg=bg_color)
+        self.content.pack(fill='both', expand=True, padx=15, pady=15)
+    
+    def set_active(self, active=True):
+        """Set drop zone to active state with animation"""
+        if active == self.is_active:
+            return
+            
+        self.is_active = active
+        if active:
+            self._start_pulse_animation()
+        else:
+            self._stop_pulse_animation()
+    
+    def _start_pulse_animation(self):
+        """Start pulsing border animation"""
+        self._pulse_step(0)
+    
+    def _pulse_step(self, step):
+        """Single step of border pulse animation"""
+        if not self.is_active:
+            self.configure(highlightbackground=self.border_color, highlightthickness=2)
+            return
+            
+        # Scale between 2-4px thickness
+        thickness = 2 + 2 * (math.sin(step / 10) + 1) / 2
+        self.configure(highlightbackground=self.active_border, highlightthickness=int(thickness))
+        
+        # Calculate color intensity
+        intensity = (math.sin(step / 10) + 1) / 2
+        r1, g1, b1 = self._hex_to_rgb(self.border_color)
+        r2, g2, b2 = self._hex_to_rgb(self.active_border)
+        r = int(r1 + (r2 - r1) * intensity)
+        g = int(g1 + (g2 - g1) * intensity)
+        b = int(b1 + (b2 - b1) * intensity)
+        color = f'#{r:02x}{g:02x}{b:02x}'
+        
+        self.configure(highlightbackground=color)
+        self.pulse_task = self.after(50, self._pulse_step, step + 1)
+    
+    def _stop_pulse_animation(self):
+        """Stop pulsing animation"""
+        if self.pulse_task:
+            self.after_cancel(self.pulse_task)
+            self.pulse_task = None
+        self.configure(highlightbackground=self.border_color, highlightthickness=2)
+    
+    def _hex_to_rgb(self, hex_color):
+        """Convert hex color to RGB tuple"""
+        hex_color = hex_color.lstrip('#')
+        return tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
