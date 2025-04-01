@@ -1,71 +1,94 @@
-# README to HTML Converter
+# README HTML Generator
 
-This project is a GUI application that converts Markdown README files to HTML. It allows users to customize themes, inject custom CSS and JavaScript, and preview the converted HTML.
+A modern GUI application for converting Markdown README files to beautifully styled HTML documents.
 
 ## Features
 
-- Drag and drop support for Markdown files
-- Theme management with color, font, and custom CSS/JS settings
-- Live preview of the converted HTML with the selected theme
-- Export options for mobile optimization, print-friendly format, and table of contents
-- Recent files list for quick access
-- Localization support
+- 🎨 Modern, clean interface with dark/light theme support
+- 📱 Responsive output with mobile-friendly options
+- 🖨️ Print-friendly version generation
+- 📑 Automatic table of contents generation
+- 🎭 Custom theme editor with live preview
+- 📋 Drag and drop file support
+- 🔄 Recent files management
+- 🌍 Internationalization support
+- ⚡ Background processing for large files
+- 📝 Markdown syntax highlighting
+- 🖼️ Image embedding support
+- 🎯 Code syntax highlighting
 
 ## Installation
 
-1. Clone the repository:
-    ```sh
-    git clone https://github.com/yourusername/readme-to-html.git
-    cd readme-to-html
-    ```
-
+1. Ensure you have Python 3.7+ installed
 2. Install the required dependencies:
-    ```sh
-    pip install -r requirements.txt
-    ```
+   ```bash
+   pip install -r requirements.txt
+   ```
 
 ## Usage
 
 1. Run the application:
-    ```sh
-    python readme_converter.py
-    ```
+   ```bash
+   python readme_converter.py
+   ```
 
-2. Drag and drop Markdown files into the application or use the "Select Files" button to choose files.
+2. Add README files by either:
+   - Dragging and dropping files into the application window
+   - Clicking "Browse Files" to select files
+   - Using recent files from the File menu
 
-3. Customize the theme using the "Theme Manager" under the "Themes" menu.
+3. Click "Convert to HTML" to process the files
 
-4. Preview the converted HTML by clicking the "Preview" button.
+4. Select an output directory for the converted files
 
-5. Export the HTML using the "Convert to HTML" button or customize export settings under the "Export" menu.
+## Configuration
 
-## Theme Management
+### Export Options
 
-The Theme Manager allows you to create, edit, and delete themes. You can customize the following settings:
+- Mobile-friendly layout: Optimizes the output for mobile devices
+- Print-friendly version: Adds print-specific styling
+- Table of contents: Automatically generates a navigation menu
 
-- Background color
-- Text color
-- Heading color
-- Link color
-- Code background color
-- Code text color
-- Font family
-- Font size
-- Custom CSS
-- Custom JavaScript
+### Theme Settings
 
-## Export Options
+- Choose from predefined themes (Default, Dark, Light)
+- Create custom themes with personalized colors
+- Live preview of theme changes
 
-The Export Options dialog allows you to customize the export settings:
+### Export Settings
 
-- Mobile Optimized: Adds a viewport meta tag for responsive design.
-- Print Friendly: Adds print styles for better print formatting.
-- Include Table of Contents: Generates a table of contents based on the headings in the Markdown file.
+- Customize output filenames
+- Add metadata (author, description, keywords)
+- Configure header and footer content
 
-## Localization
+## Command Line Usage
 
-The application supports localization. To add a new language, create a `.po` file in the `locales` directory and compile it to a `.mo` file.
+You can also use the application from the command line:
 
+```bash
+python readme_converter.py file1.md file2.md
+```
+
+This will automatically convert the specified files and prompt for an output directory.
+
+## Development
+
+The application is built using:
+- Python 3.7+
+- Tkinter for the GUI
+- markdown for Markdown processing
+- Pygments for syntax highlighting
+
+### Project Structure
+
+```
+readmehtmlgenerator/
+├── readme_converter.py   # Main application
+├── requirements.txt      # Python dependencies
+├── styles.css           # Default CSS styles
+├── preferences.json     # User preferences
+└── README.md           # Documentation
+```
 ⠀⠀⠀⠀⠀ ⠀⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀   ⠀⣀⡀⠀⠀⠀⠀⠀⠀
 ⠀⠀⣀⡴⠞⠉⢉⡿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢯⡉⠙⠳⣦⡀⠀⠀
 ⢀⣼⠋⠀⠀⢀⣤⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠻⣄⠀⠀⠈⠻⣆⠀
@@ -89,4 +112,4 @@ The application supports localization. To add a new language, create a `.po` fil
 ⠀⠀⠀⠀⠀⠀⣿⠏⠄⢠⣾⣿⣿⣿⣿⣌⠳⣄⢹⡷⣄⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠹⣧⡷⠏⣿⣿⡏⠈⣿⣿⣿⣾⣿⠛⠻⠷⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠉⠀ ⠀⢹⣿⡇ ⠀⣿⡟⠈⠉⠋⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀  ⠉⠀     ⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀  ⠉⠀     ⠉⠀⠀⠀⠀⠀⠀⠀⠀
